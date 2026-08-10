@@ -1,69 +1,117 @@
 import React from 'react';
-import { Sparkles, Compass, ShieldCheck, Cpu, ArrowDown } from 'lucide-react';
+import LiveWallpaper from './LiveWallpaper';
+import CyberBannerCanvas from './CyberBannerCanvas';
 
 export default function Hero({ onOpenContact }) {
+  const topTickerText = Array(12).fill('FRONTEND DEVELOPER');
+  const bottomTickerText = Array(12).fill('CREATIVE DEVELOPER');
+
   return (
-    <section className="relative min-h-screen flex flex-col justify-center items-center pt-28 pb-16 px-4 overflow-hidden bg-ambient-grid">
+    <section className="relative min-h-screen flex flex-col justify-between items-center pt-24 pb-8 px-4 overflow-hidden bg-black select-none">
       
-      {/* Background Neon Glowing Orbs */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/15 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
+      {/* 1. Live Wallpaper Dynamic Background */}
+      <LiveWallpaper />
 
-      {/* Cyber Badges Header */}
-      <div className="relative z-10 flex flex-wrap items-center justify-center gap-3 mb-8">
-        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full glass-panel border border-purple-500/30 text-xs font-mono text-purple-300 shadow-lg shadow-purple-500/10">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-spin" style={{ animationDuration: '6s' }} />
-          <span>PORTFOLIO // 2026 EDITION</span>
-        </div>
-        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full glass-panel border border-cyan-500/30 text-xs font-mono text-cyan-300 shadow-lg shadow-cyan-500/10">
-          <Cpu className="w-3.5 h-3.5 text-purple-400" />
-          <span>FULLSTACK & WEB3 ARCHITECT</span>
+      {/* 2. Top Marquee Ribbon Behind/Below Navbar */}
+      <div className="absolute top-4 left-0 right-0 z-10 opacity-20 pointer-events-none overflow-hidden py-1">
+        <div className="animate-marquee flex whitespace-nowrap gap-12 text-sm md:text-base font-mono tracking-widest text-slate-300">
+          {topTickerText.map((txt, idx) => (
+            <span key={idx} className="flex items-center gap-12">
+              <span>{txt}</span>
+              <span>-</span>
+            </span>
+          ))}
         </div>
       </div>
 
-      {/* Main Hero Headline */}
-      <div className="relative z-10 max-w-5xl mx-auto text-center">
-        <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight leading-[0.95] mb-6 select-none">
-          <span className="block font-heading text-slate-100 uppercase drop-shadow-md">
-            TAKE
-          </span>
-          <span className="block font-display animated-metallic tracking-wider uppercase text-glow-purple my-2">
-            CREATIVITY
-          </span>
-          <span className="block font-heading text-slate-100 uppercase tracking-widest text-4xl sm:text-6xl md:text-7xl lg:text-8xl">
-            FURTHER
-          </span>
-        </h1>
-
-        <p className="max-w-2xl mx-auto text-base sm:text-lg text-slate-400 font-normal leading-relaxed mb-10">
-          Crafting next-generation digital experiences, high-performance web applications, and immersive 3D cyberpunk interfaces with cutting-edge engineering.
-        </p>
-
-        {/* Action Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <button
-            onClick={onOpenContact}
-            className="px-8 py-4 rounded-full bg-gradient-to-r from-purple-600 via-purple-500 to-cyan-500 text-white font-bold text-sm tracking-wider uppercase shadow-xl shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-105 transition-all duration-300"
-          >
-            START A PROJECT
-          </button>
+      {/* Center Spacer */}
+      <div className="w-full flex-1 flex flex-col justify-center items-center z-20 my-auto py-8">
+        
+        {/* Main Hero Visual Container */}
+        <div className="max-w-6xl mx-auto text-center flex flex-col items-center justify-center px-2">
           
-          <a
-            href="#work"
-            className="px-8 py-4 rounded-full glass-card text-slate-200 hover:text-white font-bold text-sm tracking-wider uppercase border border-white/10 hover:border-purple-500/50 hover:bg-white/5 transition-all duration-300"
-          >
-            EXPLORE WORK
-          </a>
+          {/* Top Headline Line: CODE MEETS */}
+          <div className="flex items-center justify-center gap-4 sm:gap-6 flex-wrap leading-none">
+            <span className="font-heading font-normal text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-stroke-hollow uppercase">
+              CODE
+            </span>
+            <span className="font-heading font-black text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white text-glow-white uppercase">
+              MEETS
+            </span>
+          </div>
+
+          {/* Middle Cyber Eye Canvas Banner Frame */}
+          <CyberBannerCanvas />
+
+          {/* Bottom Headline Line: IMAGINATION */}
+          <div className="leading-none mt-1">
+            <span className="font-heading font-black text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white text-glow-white uppercase">
+              IMAGINATION
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* 3. Bottom Marquee Ribbon */}
+      <div className="w-full relative z-20 py-2 border-t border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden mt-auto">
+        <div className="animate-marquee-reverse flex whitespace-nowrap gap-12 text-xs sm:text-sm font-mono tracking-widest text-slate-400 uppercase">
+          {bottomTickerText.map((txt, idx) => (
+            <span key={idx} className="flex items-center gap-12">
+              <span>{txt}</span>
+              <span>-</span>
+            </span>
+          ))}
         </div>
       </div>
 
-      {/* Scroll Down Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
-        <span className="text-[11px] font-mono tracking-widest text-slate-400 uppercase">SCROLL</span>
-        <div className="w-6 h-10 rounded-full border-2 border-slate-500/40 flex items-start justify-center p-1">
-          <div className="w-1.5 h-3 bg-purple-400 rounded-full animate-bounce mt-1" />
-        </div>
+      {/* 4. Bottom-Left Circular Social Buttons (as shown in reference image) */}
+      <div className="absolute bottom-12 left-6 sm:left-10 z-30 flex items-center gap-3">
+        <button
+          onClick={onOpenContact}
+          title="Send Email"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full glass-panel flex items-center justify-center border border-white/25 text-slate-300 hover:text-white hover:border-white hover:scale-110 hover:shadow-lg hover:shadow-white/20 transition-all duration-300"
+        >
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+          </svg>
+        </button>
+        <a
+          href="https://github.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="GitHub"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full glass-panel flex items-center justify-center border border-white/25 text-slate-300 hover:text-white hover:border-white hover:scale-110 hover:shadow-lg hover:shadow-white/20 transition-all duration-300"
+        >
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+          </svg>
+        </a>
+        <a
+          href="https://linkedin.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="LinkedIn"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full glass-panel flex items-center justify-center border border-white/25 text-slate-300 hover:text-white hover:border-white hover:scale-110 hover:shadow-lg hover:shadow-white/20 transition-all duration-300"
+        >
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.78a1.64 1.64 0 1 0 0 3.28 1.64 1.64 0 0 0 0-3.28z" />
+          </svg>
+        </a>
+        <a
+          href="https://youtube.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="YouTube"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full glass-panel flex items-center justify-center border border-white/25 text-slate-300 hover:text-white hover:border-white hover:scale-110 hover:shadow-lg hover:shadow-white/20 transition-all duration-300"
+        >
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+          </svg>
+        </a>
       </div>
+
     </section>
   );
 }

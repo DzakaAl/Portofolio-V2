@@ -12,7 +12,7 @@ export default function App() {
   const [isContactOpen, setIsContactOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#090a10] text-slate-100 selection:bg-purple-500 selection:text-white">
+    <div className="min-h-screen bg-black text-slate-100 selection:bg-white selection:text-black">
       
       {/* Fixed Glass Navbar */}
       <Navbar onOpenContact={() => setIsContactOpen(true)} />

@@ -39,9 +39,9 @@ export default function Services({ onOpenContact }) {
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto mb-16">
         <div className="flex items-center justify-center gap-3 mb-3">
-          <span className="w-8 h-[2px] bg-purple-500"></span>
-          <span className="font-mono text-xs uppercase tracking-widest text-purple-400">CAPABILITIES</span>
-          <span className="w-8 h-[2px] bg-purple-500"></span>
+          <span className="w-8 h-[2px] bg-white"></span>
+          <span className="font-mono text-xs uppercase tracking-widest text-white/70">CAPABILITIES</span>
+          <span className="w-8 h-[2px] bg-white"></span>
         </div>
         <h2 className="text-4xl sm:text-5xl font-black font-heading text-white tracking-tight mb-4">
           SERVICES & EXPERTISE
@@ -58,12 +58,12 @@ export default function Services({ onOpenContact }) {
           return (
             <div
               key={idx}
-              className="glass-card p-8 rounded-3xl border border-white/10 hover:border-purple-500/50 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden"
+              className="glass-card p-8 rounded-3xl border border-white/10 hover:border-white/30 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden"
             >
               {/* Card Header */}
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 group-hover:scale-110 group-hover:border-purple-400 transition-all">
+                  <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/20 flex items-center justify-center text-white group-hover:scale-110 group-hover:border-white transition-all">
                     <IconComponent className="w-7 h-7" />
                   </div>
                   <span className="font-mono text-xs text-slate-500 font-bold tracking-widest">
@@ -71,10 +71,10 @@ export default function Services({ onOpenContact }) {
                   </span>
                 </div>
 
-                <h3 className="font-heading font-extrabold text-2xl text-white tracking-wider mb-2 group-hover:text-purple-300 transition-colors">
+                <h3 className="font-heading font-extrabold text-2xl text-white tracking-wider mb-2 group-hover:text-white transition-colors">
                   {srv.title}
                 </h3>
-                <p className="text-xs font-mono text-cyan-400 mb-4 tracking-wider uppercase">
+                <p className="text-xs font-mono text-white/60 mb-4 tracking-wider uppercase">
                   {srv.subtitle}
                 </p>
                 <p className="text-slate-300 text-sm leading-relaxed mb-6">
@@ -88,7 +88,7 @@ export default function Services({ onOpenContact }) {
                 <div className="grid grid-cols-2 gap-2">
                   {srv.deliverables.map((item, dIdx) => (
                     <div key={dIdx} className="flex items-center gap-2 text-xs text-slate-300">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-white/70 shrink-0" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -106,7 +106,7 @@ export default function Services({ onOpenContact }) {
           <span className="text-xs font-mono text-slate-300 pl-4">HAVE A CUSTOM PROJECT IN MIND?</span>
           <button
             onClick={onOpenContact}
-            className="px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-bold text-xs tracking-wider uppercase hover:scale-105 transition-all"
+            className="px-6 py-2.5 rounded-full bg-white text-black font-bold text-xs tracking-wider uppercase hover:scale-105 transition-all"
           >
             LET'S BUILD TOGETHER
           </button>

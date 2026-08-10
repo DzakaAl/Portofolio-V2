@@ -7,10 +7,10 @@ export default function Footer({ onOpenContact }) {
   };
 
   return (
-    <footer className="relative bg-[#06070c] border-t border-white/10 pt-20 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <footer className="relative bg-black border-t border-white/10 pt-20 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
       
       {/* Bottom Ambient Glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-gradient-to-t from-purple-600/20 via-cyan-500/10 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-gradient-to-t from-white/10 via-white/5 to-transparent blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-16 relative z-10">
         
@@ -18,8 +18,8 @@ export default function Footer({ onOpenContact }) {
         <div className="flex flex-col items-center text-center space-y-6">
           
           {/* Chrome Monogram Emblem */}
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 via-cyan-400 to-pink-500 p-[2px] shadow-2xl shadow-purple-500/30 group hover:scale-105 transition-transform duration-500">
-            <div className="w-full h-full bg-[#0a0c16] rounded-full flex items-center justify-center overflow-hidden">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-white/50 via-white/20 to-white/50 p-[2px] shadow-2xl shadow-white/10 group hover:scale-105 transition-transform duration-500">
+            <div className="w-full h-full bg-black rounded-full flex items-center justify-center overflow-hidden">
               <img
                 src="/assets/chrome-logo.jpg"
                 alt="Chrome Emblem Logo"
@@ -32,7 +32,7 @@ export default function Footer({ onOpenContact }) {
             <h3 className="font-heading font-black text-4xl sm:text-5xl text-white tracking-widest uppercase">
               EXTIZ
             </h3>
-            <p className="font-mono text-xs text-purple-400 tracking-widest uppercase mt-2">
+            <p className="font-mono text-xs text-white/70 tracking-widest uppercase mt-2">
               DESIGNED FOR DIGITAL EXPERIENCES • AVAILABLE FOR FREELANCE & CONTRACT WORK
             </p>
           </div>
@@ -40,7 +40,7 @@ export default function Footer({ onOpenContact }) {
           <div className="flex items-center gap-4 pt-2">
             <button
               onClick={onOpenContact}
-              className="px-8 py-3 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-bold text-xs tracking-widest uppercase shadow-lg shadow-purple-500/25 hover:scale-105 transition-all"
+              className="px-8 py-3 rounded-full bg-white text-black font-bold text-xs tracking-widest uppercase shadow-lg shadow-white/20 hover:scale-105 transition-all"
             >
               GET IN TOUCH
             </button>
@@ -58,16 +58,16 @@ export default function Footer({ onOpenContact }) {
             <a href="#about" className="hover:text-white transition-colors">ABOUT</a>
             <a href="#work" className="hover:text-white transition-colors">WORK</a>
             <a href="#services" className="hover:text-white transition-colors">SERVICES</a>
-            <button onClick={onOpenContact} className="hover:text-purple-400 transition-colors">CONTACT</button>
+            <button onClick={onOpenContact} className="hover:text-white transition-colors">CONTACT</button>
           </div>
 
           <button
             onClick={scrollToTop}
-            className="flex items-center gap-2 p-2.5 rounded-full glass-panel border border-white/10 hover:border-purple-500/50 hover:text-white transition-all"
+            className="flex items-center gap-2 p-2.5 rounded-full glass-panel border border-white/10 hover:border-white/50 hover:text-white transition-all"
             title="Back to Top"
           >
             <span className="text-[10px] tracking-wider uppercase">BACK TO TOP</span>
-            <ArrowUp className="w-4 h-4 text-purple-400" />
+            <ArrowUp className="w-4 h-4 text-white" />
           </button>
         </div>
 

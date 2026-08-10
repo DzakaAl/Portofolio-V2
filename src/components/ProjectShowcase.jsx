@@ -73,14 +73,14 @@ export default function ProjectShowcase() {
     <section id="work" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
       
       {/* Background glow orb */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-white/5 rounded-full blur-[140px] pointer-events-none" />
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
         <div>
           <div className="flex items-center gap-3 mb-3">
-            <span className="w-8 h-[2px] bg-cyan-400"></span>
-            <span className="font-mono text-xs uppercase tracking-widest text-cyan-400">PORTFOLIO SHOWCASE</span>
+            <span className="w-8 h-[2px] bg-white"></span>
+            <span className="font-mono text-xs uppercase tracking-widest text-white/70">PORTFOLIO SHOWCASE</span>
           </div>
           <h2 className="text-4xl sm:text-5xl font-black font-heading text-white tracking-tight">
             FEATURED WORK
@@ -95,7 +95,7 @@ export default function ProjectShowcase() {
               onClick={() => setActiveProjectIndex(idx)}
               className={`px-4 py-2 rounded-full text-xs font-bold font-mono tracking-wider transition-all ${
                 activeProjectIndex === idx
-                  ? 'bg-gradient-to-r from-purple-600 to-cyan-500 text-white shadow-lg shadow-purple-500/25'
+                  ? 'bg-white text-black shadow-lg shadow-white/20'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -122,34 +122,34 @@ export default function ProjectShowcase() {
               {/* Top Card Header */}
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div className="flex items-center gap-2">
-                  <Gamepad2 className="w-4 h-4 text-purple-400" />
+                  <Gamepad2 className="w-4 h-4 text-white/70" />
                   <span className="text-xs font-mono font-bold tracking-widest text-slate-200 uppercase">
                     {currentProject.category}
                   </span>
                 </div>
-                <div className="px-2.5 py-0.5 rounded bg-purple-500/20 border border-purple-500/40 text-[10px] font-mono text-purple-300 font-bold">
+                <div className="px-2.5 py-0.5 rounded bg-white/10 border border-white/20 text-[10px] font-mono text-white/80 font-bold">
                   CARD #{activeProjectIndex + 1}
                 </div>
               </div>
 
               {/* Main Artwork Frame */}
-              <div className="relative aspect-video rounded-lg overflow-hidden border border-purple-500/30 group">
+              <div className="relative aspect-video rounded-lg overflow-hidden border border-white/20 group">
                 <img
                   src={currentProject.image}
                   alt={currentProject.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 
-                {/* Holographic Sheen Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 via-transparent to-cyan-500/20 pointer-events-none" />
+                {/* Monochrome Sheen Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent pointer-events-none" />
                 
                 {/* Status Badges */}
                 <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                  <span className="px-2.5 py-1 glass-panel rounded text-[11px] font-mono text-cyan-300 border border-cyan-400/40 font-bold flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-cyan-400" />
+                  <span className="px-2.5 py-1 glass-panel rounded text-[11px] font-mono text-white/80 border border-white/30 font-bold flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3 text-white" />
                     STATUS: ACTIVE
                   </span>
-                  <span className="px-2.5 py-1 glass-panel rounded text-[11px] font-mono text-purple-300 border border-purple-400/40 font-bold">
+                  <span className="px-2.5 py-1 glass-panel rounded text-[11px] font-mono text-white/80 border border-white/30 font-bold">
                     {currentProject.stats.year}
                   </span>
                 </div>
@@ -165,7 +165,7 @@ export default function ProjectShowcase() {
                 </div>
 
                 <div className="flex items-center gap-1 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
-                  <Flame className="w-4 h-4 text-amber-400" />
+                  <Flame className="w-4 h-4 text-white/70" />
                   <span className="text-xs font-mono font-bold text-slate-200">
                     {Object.values(currentProject.stats)[0]}
                   </span>
@@ -181,10 +181,10 @@ export default function ProjectShowcase() {
           <div className="glass-card p-8 rounded-3xl border border-white/10 space-y-6">
             
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <span className="text-xs font-mono text-purple-400 tracking-widest uppercase">
+              <span className="text-xs font-mono text-white/70 tracking-widest uppercase">
                 // PROJECT DETAILS 0{activeProjectIndex + 1}
               </span>
-              <span className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-mono border border-cyan-500/30">
+              <span className="px-3 py-1 rounded-full bg-white/10 text-white/80 text-xs font-mono border border-white/30">
                 LATEST RELEASE
               </span>
             </div>
@@ -205,7 +205,7 @@ export default function ProjectShowcase() {
                 {currentProject.tags.map((tag, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1.5 rounded-lg bg-slate-900/80 border border-white/10 text-slate-200 text-xs font-mono font-semibold hover:border-purple-500/50 hover:text-purple-300 transition-colors"
+                    className="px-3 py-1.5 rounded-lg bg-slate-900/80 border border-white/10 text-slate-200 text-xs font-mono font-semibold hover:border-white/50 hover:text-white transition-colors"
                   >
                     {tag}
                   </span>
@@ -219,7 +219,7 @@ export default function ProjectShowcase() {
                 href={currentProject.liveUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-bold text-xs tracking-wider uppercase shadow-lg shadow-purple-500/20 hover:scale-105 transition-all"
+                className="flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black font-bold text-xs tracking-wider uppercase shadow-lg shadow-white/20 hover:scale-105 transition-all"
               >
                 <span>LAUNCH PROJECT</span>
                 <ExternalLink className="w-4 h-4" />
@@ -229,9 +229,9 @@ export default function ProjectShowcase() {
                 href={currentProject.githubUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 px-6 py-3 rounded-full glass-panel border border-white/10 text-slate-300 hover:text-white font-bold text-xs tracking-wider uppercase hover:border-purple-500/50 transition-all"
+                className="flex items-center gap-2 px-6 py-3 rounded-full glass-panel border border-white/10 text-slate-300 hover:text-white font-bold text-xs tracking-wider uppercase hover:border-white/50 transition-all"
               >
-                <Code2 className="w-4 h-4 text-purple-400" />
+                <Code2 className="w-4 h-4 text-white" />
                 <span>SOURCE CODE</span>
               </a>
             </div>
