@@ -1,73 +1,124 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import LiveWallpaper from './LiveWallpaper';
-import CyberBannerCanvas from './CyberBannerCanvas';
+import CloudVideoHover from './CloudVideoHover';
+import { gsap } from 'gsap';
 
 export default function Hero({ onOpenContact }) {
-  const topTickerText = Array(12).fill('FRONTEND DEVELOPER');
-  const bottomTickerText = Array(12).fill('CREATIVE DEVELOPER');
+  const heroRef = useRef(null);
+  const line1Ref = useRef(null);
+  const line2Ref = useRef(null);
+  const socialRef = useRef(null);
+
+  const [isHovered, setIsHovered] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  const text1 = "TURNING IDEAS";
+  const text2 = "INTO CODE";
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const chars1 = line1Ref.current?.querySelectorAll('.type-char') || [];
+      const chars2 = line2Ref.current?.querySelectorAll('.type-char') || [];
+      const allChars = [...chars1, ...chars2];
+
+      const tl = gsap.timeline({ delay: 0.3 });
+
+      // Staggered typewriter reveal for characters
+      tl.fromTo(
+        allChars,
+        { opacity: 0, y: 15, filter: 'blur(8px)' },
+        {
+          opacity: 1,
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 0.08,
+          stagger: 0.05,
+          ease: 'power2.out',
+        }
+      );
+
+      // Social icons entrance after typewriter completes
+      tl.fromTo(
+        socialRef.current?.children || [],
+        { y: 30, opacity: 0, scale: 0.8 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: 'back.out(1.7)',
+        },
+        "-=0.2"
+      );
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  const handleMouseMove = (e) => {
+    if (!heroRef.current) return;
+    const rect = heroRef.current.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-between items-center pt-24 pb-8 px-4 overflow-hidden bg-black select-none">
-      
-      {/* 1. Live Wallpaper Dynamic Background */}
+    <section
+      ref={heroRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative min-h-screen flex flex-col justify-between items-center pt-24 pb-8 px-4 overflow-hidden bg-black select-none group/hero"
+    >
+      {/* 1. Dynamic Live Wallpaper Background */}
       <LiveWallpaper />
 
-      {/* 2. Top Marquee Ribbon Behind/Below Navbar */}
-      <div className="absolute top-4 left-0 right-0 z-10 opacity-20 pointer-events-none overflow-hidden py-1">
-        <div className="animate-marquee flex whitespace-nowrap gap-12 text-sm md:text-base font-mono tracking-widest text-slate-300">
-          {topTickerText.map((txt, idx) => (
-            <span key={idx} className="flex items-center gap-12">
-              <span>{txt}</span>
-              <span>-</span>
-            </span>
-          ))}
-        </div>
-      </div>
+      {/* 2. Abstract Cloud-Shaped Video Hover Reveal */}
+      <CloudVideoHover isHovered={isHovered} mousePos={mousePos} />
 
-      {/* Center Spacer */}
+      {/* Center Main Hero Content */}
       <div className="w-full flex-1 flex flex-col justify-center items-center z-20 my-auto py-8">
         
-        {/* Main Hero Visual Container */}
         <div className="max-w-6xl mx-auto text-center flex flex-col items-center justify-center px-2">
           
-          {/* Top Headline Line: CODE MEETS */}
-          <div className="flex items-center justify-center gap-4 sm:gap-6 flex-wrap leading-none">
-            <span className="font-heading font-normal text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-stroke-hollow uppercase">
-              CODE
-            </span>
-            <span className="font-heading font-black text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white text-glow-white uppercase">
-              MEETS
-            </span>
-          </div>
+          {/* Main Headline: TURNING IDEAS INTO CODE with smooth typewriter reveal */}
+          <h1 className="flex flex-col items-center justify-center gap-1 select-none">
+            <div ref={line1Ref} className="flex items-center justify-center gap-4 sm:gap-6 flex-wrap leading-none">
+              <span className="font-heading font-black text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white text-glow-white uppercase">
+                {text1.split('').map((char, index) => (
+                  <span
+                    key={index}
+                    className="type-char inline-block"
+                  >
+                    {char === ' ' ? '\u00A0' : char}
+                  </span>
+                ))}
+              </span>
+            </div>
 
-          {/* Middle Cyber Eye Canvas Banner Frame */}
-          <CyberBannerCanvas />
-
-          {/* Bottom Headline Line: IMAGINATION */}
-          <div className="leading-none mt-1">
-            <span className="font-heading font-black text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white text-glow-white uppercase">
-              IMAGINATION
-            </span>
-          </div>
+            <div ref={line2Ref} className="leading-none mt-2 sm:mt-4">
+              <span className="font-heading font-black text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white text-glow-white uppercase">
+                {text2.split('').map((char, index) => (
+                  <span
+                    key={index}
+                    className="type-char inline-block"
+                  >
+                    {char === ' ' ? '\u00A0' : char}
+                  </span>
+                ))}
+              </span>
+            </div>
+          </h1>
 
         </div>
 
       </div>
 
-      {/* 3. Bottom Marquee Ribbon */}
-      <div className="w-full relative z-20 py-2 border-t border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden mt-auto">
-        <div className="animate-marquee-reverse flex whitespace-nowrap gap-12 text-xs sm:text-sm font-mono tracking-widest text-slate-400 uppercase">
-          {bottomTickerText.map((txt, idx) => (
-            <span key={idx} className="flex items-center gap-12">
-              <span>{txt}</span>
-              <span>-</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* 4. Bottom-Left Circular Social Buttons (as shown in reference image) */}
-      <div className="absolute bottom-12 left-6 sm:left-10 z-30 flex items-center gap-3">
+      {/* 3. Bottom-Left Circular Social Buttons */}
+      <div ref={socialRef} className="absolute bottom-12 left-6 sm:left-10 z-30 flex items-center gap-3 pointer-events-auto">
         <button
           onClick={onOpenContact}
           title="Send Email"
@@ -100,14 +151,15 @@ export default function Hero({ onOpenContact }) {
           </svg>
         </a>
         <a
-          href="https://youtube.com"
+          href="/assets/CV.pdf"
+          download="Mordzz_CV.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          title="YouTube"
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full glass-panel flex items-center justify-center border border-white/25 text-slate-300 hover:text-white hover:border-white hover:scale-110 hover:shadow-lg hover:shadow-white/20 transition-all duration-300"
+          title="Download CV"
+          className="w-10 h-10 sm:w-11 sm:h-11 rounded-full glass-panel flex items-center justify-center border border-white/25 text-slate-300 hover:text-white hover:border-white hover:scale-110 hover:shadow-lg hover:shadow-white/20 transition-all duration-300 font-mono text-xs font-bold tracking-wider"
         >
           <svg className="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
-            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
           </svg>
         </a>
       </div>
@@ -115,3 +167,4 @@ export default function Hero({ onOpenContact }) {
     </section>
   );
 }
+

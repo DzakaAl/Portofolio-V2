@@ -1,15 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import MarqueeBanner from './components/MarqueeBanner';
 import About from './components/About';
 import ProjectShowcase from './components/ProjectShowcase';
-import Services from './components/Services';
+import HowIWork from './components/HowIWork';
 import ContactModal from './components/ContactModal';
 import Footer from './components/Footer';
 
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from 'lenis';
+
+gsap.registerPlugin(ScrollTrigger);
+
 export default function App() {
   const [isContactOpen, setIsContactOpen] = useState(false);
+
+  useEffect(() => {
+    // Initialize Lenis smooth scroll engine synchronized with GSAP ScrollTrigger
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 2,
+    });
+
+    lenis.on('scroll', ScrollTrigger.update);
+
+    const updateLenis = (time) => {
+      lenis.raf(time * 1000);
+    };
+
+    gsap.ticker.add(updateLenis);
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+      gsap.ticker.remove(updateLenis);
+      lenis.destroy();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-slate-100 selection:bg-white selection:text-black">
@@ -21,20 +53,14 @@ export default function App() {
         {/* Hero Section */}
         <Hero onOpenContact={() => setIsContactOpen(true)} />
 
-        {/* Scrolling Ticker Ribbon 1 */}
-        <MarqueeBanner />
-
         {/* About Me Section */}
         <About />
-
-        {/* Scrolling Ticker Ribbon 2 */}
-        <MarqueeBanner />
 
         {/* Featured Work / Interactive Holographic 3D Card Showcase */}
         <ProjectShowcase />
 
-        {/* Services & Capabilities Matrix */}
-        <Services onOpenContact={() => setIsContactOpen(true)} />
+        {/* How I Work — From Idea to Launch Process Timeline */}
+        <HowIWork onOpenContact={() => setIsContactOpen(true)} />
       </main>
 
       {/* Footer & Chrome Emblem */}
@@ -49,3 +75,4 @@ export default function App() {
     </div>
   );
 }
+

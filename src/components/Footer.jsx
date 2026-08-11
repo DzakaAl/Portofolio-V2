@@ -29,8 +29,8 @@ export default function Footer({ onOpenContact }) {
           </div>
 
           <div>
-            <h3 className="font-heading font-black text-4xl sm:text-5xl text-white tracking-widest uppercase">
-              EXTIZ
+            <h3 className="font-tech font-bold text-3xl sm:text-4xl text-white tracking-widest uppercase">
+              MORDZZ
             </h3>
             <p className="font-mono text-xs text-white/70 tracking-widest uppercase mt-2">
               DESIGNED FOR DIGITAL EXPERIENCES • AVAILABLE FOR FREELANCE & CONTRACT WORK
@@ -51,13 +51,13 @@ export default function Footer({ onOpenContact }) {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-12 border-t border-white/10 text-xs font-mono text-slate-400">
           
           <div>
-            © 2026 EXTIZ STUDIO. ALL RIGHTS RESERVED.
+            © 2026 MORDZZ STUDIO. ALL RIGHTS RESERVED.
           </div>
 
           <div className="flex items-center gap-6">
             <a href="#about" className="hover:text-white transition-colors">ABOUT</a>
             <a href="#work" className="hover:text-white transition-colors">WORK</a>
-            <a href="#services" className="hover:text-white transition-colors">SERVICES</a>
+            <a href="#process" className="hover:text-white transition-colors">PROCESS</a>
             <button onClick={onOpenContact} className="hover:text-white transition-colors">CONTACT</button>
           </div>
 

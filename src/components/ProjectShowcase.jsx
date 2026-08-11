@@ -82,7 +82,7 @@ export default function ProjectShowcase() {
             <span className="w-8 h-[2px] bg-white"></span>
             <span className="font-mono text-xs uppercase tracking-widest text-white/70">PORTFOLIO SHOWCASE</span>
           </div>
-          <h2 className="text-4xl sm:text-5xl font-black font-heading text-white tracking-tight">
+          <h2 className="text-4xl sm:text-5xl font-bold font-tech text-white tracking-tight">
             FEATURED WORK
           </h2>
         </div>
