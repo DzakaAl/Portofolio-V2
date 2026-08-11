@@ -6,7 +6,8 @@
     --font-heading: 'Cinzel', serif;
     --font-tech: 'Plus Jakarta Sans', sans-serif;
     --font-body: 'Plus Jakarta Sans', sans-serif;
-    --font-logo: 'Allura', cursive;
+    --font-logo: 'Love Light', cursive;
+    --font-lovelight: 'Love Light', cursive;
   }
   
   body {
@@ -27,19 +28,16 @@
     font-family: var(--font-display);
   }
 
-  .font-logo {
-    font-family: 'Allura', cursive;
+  .font-logo, .font-lovelight {
+    font-family: 'Love Light', cursive;
   }
 }
 
 .text-neon-blue {
   color: #38bdf8;
   text-shadow: 
-    0 0 5px #38bdf8,
-    0 0 10px #38bdf8,
-    0 0 20px #0284c7,
-    0 0 40px #0284c7,
-    0 0 60px #0369a1;
+    0 0 8px rgba(56, 189, 248, 0.4),
+    0 0 16px rgba(56, 189, 248, 0.2);
 }
 
 /* Custom Monochrome & Glow Text Effects */
@@ -150,11 +148,6 @@
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
-}
-
-.glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.06);
 }
 
 /* Ambient Lighting Background Grid */

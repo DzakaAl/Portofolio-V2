@@ -152,7 +152,7 @@ export default function Hero({ onOpenContact }) {
         </a>
         <a
           href="/assets/CV.pdf"
-          download="Mordzz_CV.pdf"
+          download="DzakaAl_CV.pdf"
           target="_blank"
           rel="noopener noreferrer"
           title="Download CV"

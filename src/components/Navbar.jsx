@@ -292,10 +292,17 @@ export default function Navbar({ onOpenContact }) {
             scrolled ? 'border-white/25 shadow-2xl' : 'border-white/15 shadow-xl'
           }`}
         >
-          {/* Brand Text: Mordzz in Allura font with Neon Blue Glow */}
-          <a href="#" className="flex items-center group py-1">
-            <span className="font-logo text-neon-blue text-3xl sm:text-4xl font-semibold leading-none hover:scale-105 transition-transform drop-shadow-[0_2px_8px_rgba(56,189,248,0.5)]">
-              Mordzz
+          {/* Brand Logo: Soft Sky Blue Icon + Love Light DzakaAl Text */}
+          <a
+            href="#hero"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="flex items-center gap-2.5 group py-1"
+          >
+            <span className="font-lovelight text-sky-400 text-3xl sm:text-4xl font-semibold leading-none group-hover:text-sky-300 transition-colors drop-shadow-[0_2px_8px_rgba(56,189,248,0.3)]">
+              DzakaAl
             </span>
           </a>
 

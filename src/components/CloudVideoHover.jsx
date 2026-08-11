@@ -153,7 +153,7 @@ export default function CloudVideoHover({ isHovered }) {
       />
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none z-10 filter brightness-125 contrast-110 saturate-125"
+        className="absolute inset-0 w-full h-full pointer-events-none z-10 filter brightness-75 contrast-115 saturate-110 opacity-85"
       />
     </>
   );

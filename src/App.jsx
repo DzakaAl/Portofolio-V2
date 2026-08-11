@@ -6,6 +6,8 @@ import ProjectShowcase from './components/ProjectShowcase';
 import HowIWork from './components/HowIWork';
 import ContactModal from './components/ContactModal';
 import Footer from './components/Footer';
+import Preloader from './components/Preloader';
+import AudioPlayer from './components/AudioPlayer';
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -15,6 +17,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function App() {
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [startAudio, setStartAudio] = useState(false);
 
   useEffect(() => {
     // Initialize Lenis smooth scroll engine synchronized with GSAP ScrollTrigger
@@ -46,6 +50,19 @@ export default function App() {
   return (
     <div className="min-h-screen bg-black text-slate-100 selection:bg-white selection:text-black">
       
+      {/* High-End Futuristic Loading Screen */}
+      {isLoading && (
+        <Preloader
+          onComplete={() => {
+            setIsLoading(false);
+            setStartAudio(true);
+          }}
+        />
+      )}
+
+      {/* Floating Ambient Audio Player with Auto-Play Trigger */}
+      <AudioPlayer autoPlayTrigger={startAudio} />
+
       {/* Fixed Glass Navbar */}
       <Navbar onOpenContact={() => setIsContactOpen(true)} />
 

@@ -7,40 +7,36 @@ export default function Footer({ onOpenContact }) {
   };
 
   return (
-    <footer className="relative bg-black border-t border-white/10 pt-20 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <footer className="relative bg-black border-t border-white/10 pt-20 pb-12 px-5 sm:px-10 lg:px-14 max-w-[1600px] mx-auto overflow-hidden">
       
       {/* Bottom Ambient Glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-gradient-to-t from-white/10 via-white/5 to-transparent blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto space-y-16 relative z-10">
+      <div className="w-full space-y-16 relative z-10">
         
         {/* Main Footer Centerpiece */}
-        <div className="flex flex-col items-center text-center space-y-6">
+        <div className="flex flex-col items-center text-center space-y-6 max-w-2xl mx-auto">
           
-          {/* Chrome Monogram Emblem */}
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-white/50 via-white/20 to-white/50 p-[2px] shadow-2xl shadow-white/10 group hover:scale-105 transition-transform duration-500">
-            <div className="w-full h-full bg-black rounded-full flex items-center justify-center overflow-hidden">
-              <img
-                src="/assets/chrome-logo.jpg"
-                alt="Chrome Emblem Logo"
-                className="w-full h-full object-cover filter brightness-110 contrast-125"
-              />
-            </div>
+          {/* Soft Sky Blue Text Logo: DzakaAl with Love Light Font */}
+          <div className="py-2 flex items-center gap-3">
+            <span className="font-lovelight text-sky-400 text-5xl sm:text-6xl font-semibold leading-none drop-shadow-[0_2px_12px_rgba(56,189,248,0.4)] inline-block hover:scale-105 transition-transform duration-300">
+              DzakaAl
+            </span>
           </div>
 
-          <div>
-            <h3 className="font-tech font-bold text-3xl sm:text-4xl text-white tracking-widest uppercase">
-              MORDZZ
+          <div className="space-y-2">
+            <h3 className="font-tech font-bold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-none uppercase">
+              HAVE AN IDEA?
             </h3>
-            <p className="font-mono text-xs text-white/70 tracking-widest uppercase mt-2">
-              DESIGNED FOR DIGITAL EXPERIENCES • AVAILABLE FOR FREELANCE & CONTRACT WORK
+            <p className="font-mono text-xs text-white/50 tracking-widest uppercase pt-2">
+              AVAILABLE FOR FREELANCE PROJECTS & FULL-TIME CONTRACTS
             </p>
           </div>
 
-          <div className="flex items-center gap-4 pt-2">
+          <div className="pt-3">
             <button
               onClick={onOpenContact}
-              className="px-8 py-3 rounded-full bg-white text-black font-bold text-xs tracking-widest uppercase shadow-lg shadow-white/20 hover:scale-105 transition-all"
+              className="px-9 py-4 rounded-full bg-white text-black font-extrabold text-xs tracking-[0.15em] uppercase shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-[0_0_45px_rgba(255,255,255,0.5)] hover:scale-105 transition-all duration-300"
             >
               GET IN TOUCH
             </button>
@@ -51,13 +47,13 @@ export default function Footer({ onOpenContact }) {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-12 border-t border-white/10 text-xs font-mono text-slate-400">
           
           <div>
-            © 2026 MORDZZ STUDIO. ALL RIGHTS RESERVED.
+            © 2026 DZAKAAL STUDIO. ALL RIGHTS RESERVED.
           </div>
 
           <div className="flex items-center gap-6">
-            <a href="#about" className="hover:text-white transition-colors">ABOUT</a>
-            <a href="#work" className="hover:text-white transition-colors">WORK</a>
-            <a href="#process" className="hover:text-white transition-colors">PROCESS</a>
+            <a href="#about" className="hover:text-white transition-colors">ABOUT ME</a>
+            <a href="#work" className="hover:text-white transition-colors">FEATURED WORK</a>
+            <a href="#process" className="hover:text-white transition-colors">HOW I WORK</a>
             <button onClick={onOpenContact} className="hover:text-white transition-colors">CONTACT</button>
           </div>
 

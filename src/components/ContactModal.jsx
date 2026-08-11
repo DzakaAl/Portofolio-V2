@@ -42,7 +42,7 @@ export default function ContactModal({ isOpen, onClose }) {
             <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center mx-auto animate-bounce">
               <CheckCircle className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl font-bold font-heading text-white">TRANSMISSION RECEIVED!</h3>
+            <h3 className="text-2xl font-bold font-tech text-white">TRANSMISSION RECEIVED!</h3>
             <p className="text-slate-300 text-sm">
               Thank you for reaching out. I will respond to your message within 24 hours.
             </p>
@@ -54,7 +54,7 @@ export default function ContactModal({ isOpen, onClose }) {
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>LET'S CONNECT</span>
               </div>
-              <h3 className="text-3xl font-black font-heading text-white tracking-wide">
+              <h3 className="text-3xl font-black font-tech text-white tracking-wide">
                 START A PROJECT
               </h3>
               <p className="text-slate-400 text-xs mt-1">

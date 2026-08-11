@@ -1,12 +1,15 @@
-import React, { useState, useRef } from 'react';
-import { ExternalLink, ChevronRight, Gamepad2, Layers, Cpu, Flame, Sparkles, Code2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { ExternalLink, ArrowRight } from 'lucide-react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 export default function ProjectShowcase() {
   const [activeProjectIndex, setActiveProjectIndex] = useState(0);
-  
-  // 3D Card Tilt State
-  const cardRef = useRef(null);
-  const [transformStyle, setTransformStyle] = useState('perspective(1000px) rotateX(0deg) rotateY(0deg)');
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isFinished, setIsFinished] = useState(false);
+
+  const containerRef = useRef(null);
+  const pinnedRef = useRef(null);
 
   const projects = [
     {
@@ -49,197 +52,199 @@ export default function ProjectShowcase() {
 
   const currentProject = projects[activeProjectIndex];
 
-  // Mouse tilt logic
-  const handleMouseMove = (e) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: 'top top',
+        end: `+=${projects.length * 220}%`,
+        pin: pinnedRef.current,
+        pinSpacing: true,
+        scrub: 0.8,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          const scrollRange = 0.85;
+          const clamped = Math.min(progress / scrollRange, 1);
+          const currentPos = clamped * (projects.length - 1);
+          setScrollProgress(currentPos);
+          setIsFinished(progress > 0.88);
 
-    const rotateX = ((y - centerY) / centerY) * -12; // max 12 deg tilt
-    const rotateY = ((x - centerX) / centerX) * 12;
+          const nearestIdx = Math.min(
+            Math.round(currentPos),
+            projects.length - 1
+          );
+          setActiveProjectIndex(nearestIdx);
+        },
+      });
+    }, containerRef);
 
-    setTransformStyle(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
-  };
-
-  const handleMouseLeave = () => {
-    setTransformStyle('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
-  };
+    return () => ctx.revert();
+  }, [projects.length]);
 
   return (
-    <section id="work" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
-      
-      {/* Background glow orb */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-white/5 rounded-full blur-[140px] pointer-events-none" />
+    <div ref={containerRef} className="relative w-full bg-black select-none">
 
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
-        <div>
-          <div className="flex items-center gap-3 mb-3">
-            <span className="w-8 h-[2px] bg-white"></span>
-            <span className="font-mono text-xs uppercase tracking-widest text-white/70">PORTFOLIO SHOWCASE</span>
+      <section
+        ref={pinnedRef}
+        id="work"
+        className="relative h-screen w-full flex flex-col justify-between pt-20 pb-12 px-5 sm:px-10 lg:px-14 max-w-[1600px] mx-auto overflow-hidden"
+      >
+
+        {/* Background glow orb */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[650px] h-[650px] bg-white/[0.03] rounded-full blur-[180px] pointer-events-none" />
+
+        {/* Header — Section title (Posisi diturunkan dan jarak disesuaikan) */}
+        <div className="flex items-end justify-between pt-8 mt-12 mb-4 z-10 shrink-0">
+          <div>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-tech text-white tracking-tight leading-none">
+              FEATURED WORK
+            </h2>
           </div>
-          <h2 className="text-4xl sm:text-5xl font-bold font-tech text-white tracking-tight">
-            FEATURED WORK
-          </h2>
         </div>
 
-        {/* Project Selector Switcher */}
-        <div className="flex items-center gap-2 p-1.5 glass-panel rounded-full border border-white/10 self-start md:self-auto">
-          {projects.map((p, idx) => (
-            <button
-              key={p.id}
-              onClick={() => setActiveProjectIndex(idx)}
-              className={`px-4 py-2 rounded-full text-xs font-bold font-mono tracking-wider transition-all ${
-                activeProjectIndex === idx
-                  ? 'bg-white text-black shadow-lg shadow-white/20'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              0{idx + 1}. {p.title.split(' ')[0]}
-            </button>
-          ))}
-        </div>
-      </div>
+        {/* Main two-column layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center flex-1 min-h-0 z-10">
 
-      {/* Main Grid: Left Holographic 3D Card Showcase, Right Project Details Panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        
-        {/* Left Side: 3D Holographic Interactive Game Trading Card */}
-        <div className="lg:col-span-6 flex justify-center">
+          {/* ── LEFT: Ultra-Premium Pure 16:9 Image 3D Card ── */}
           <div
-            ref={cardRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            style={{ transform: transformStyle, transition: 'transform 0.15s ease-out' }}
-            className="w-full max-w-md holo-card-frame cursor-pointer select-none"
+            className="lg:col-span-7 flex justify-center items-center relative overflow-visible h-full"
+            style={{ perspective: '1600px', perspectiveOrigin: '50% 50%' }}
           >
-            <div className="holo-card-inner p-5 flex flex-col gap-4 relative overflow-hidden">
-              
-              {/* Top Card Header */}
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <div className="flex items-center gap-2">
-                  <Gamepad2 className="w-4 h-4 text-white/70" />
-                  <span className="text-xs font-mono font-bold tracking-widest text-slate-200 uppercase">
-                    {currentProject.category}
-                  </span>
-                </div>
-                <div className="px-2.5 py-0.5 rounded bg-white/10 border border-white/20 text-[10px] font-mono text-white/80 font-bold">
-                  CARD #{activeProjectIndex + 1}
-                </div>
-              </div>
+            <div className="relative w-full flex items-center justify-center h-full">
+              {projects.map((project, index) => {
+                const offset = index - scrollProgress;
+                const absOffset = Math.abs(offset);
 
-              {/* Main Artwork Frame */}
-              <div className="relative aspect-video rounded-lg overflow-hidden border border-white/20 group">
-                <img
-                  src={currentProject.image}
-                  alt={currentProject.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                
-                {/* Monochrome Sheen Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-transparent pointer-events-none" />
-                
-                {/* Status Badges */}
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                  <span className="px-2.5 py-1 glass-panel rounded text-[11px] font-mono text-white/80 border border-white/30 font-bold flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-white" />
-                    STATUS: ACTIVE
-                  </span>
-                  <span className="px-2.5 py-1 glass-panel rounded text-[11px] font-mono text-white/80 border border-white/30 font-bold">
-                    {currentProject.stats.year}
-                  </span>
-                </div>
-              </div>
+                if (absOffset > 0.99) return null;
 
-              {/* Card Footer Info */}
-              <div className="flex items-center justify-between pt-2">
-                <div>
-                  <h3 className="font-heading font-extrabold text-lg text-white tracking-wider">
-                    {currentProject.title}
-                  </h3>
-                  <p className="text-xs text-slate-400 font-mono">{currentProject.subtitle}</p>
-                </div>
+                // Dynamic ultra-smooth 3D transforms
+                const rotateY   = offset * -45;
+                const rotateX   = offset * 18;
+                const rotateZ   = offset * -6;
+                const skewY     = offset * -3;
+                const translateX = offset * 50;
+                const translateY = offset * 70;
+                const translateZ = -absOffset * 320;
+                const scale     = 1 - absOffset * 0.12;
+                const opacity   = Math.pow(1 - absOffset, 2);
 
-                <div className="flex items-center gap-1 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
-                  <Flame className="w-4 h-4 text-white/70" />
-                  <span className="text-xs font-mono font-bold text-slate-200">
-                    {Object.values(currentProject.stats)[0]}
-                  </span>
-                </div>
-              </div>
-
+                return (
+                  <div
+                    key={project.id}
+                    style={{
+                      transform: `translate3d(${translateX}px, ${translateY}px, ${translateZ}px) rotateY(${rotateY}deg) rotateX(${rotateX}deg) rotateZ(${rotateZ}deg) skewY(${skewY}deg) scale(${scale})`,
+                      opacity,
+                      zIndex: Math.round(10 - absOffset * 5),
+                      transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease',
+                    }}
+                    className="absolute w-full max-w-[580px] sm:max-w-[680px] select-none"
+                  >
+                    {/* Floating Glass Frame around pure 16:9 Image */}
+                    <div
+                      className="rounded-3xl p-[1px] relative group"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0.2) 100%)',
+                        boxShadow: '0 30px 90px rgba(0,0,0,0.95), 0 0 50px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.2)',
+                      }}
+                    >
+                      <div className="bg-[#050505] rounded-3xl overflow-hidden p-2">
+                        {/* Pure 16:9 Image container - clean without text overlay inside */}
+                        <div className="relative w-full aspect-video rounded-2xl overflow-hidden">
+                          <img
+                            src={project.image}
+                            alt={project.title}
+                            className="w-full h-full object-cover"
+                            style={{ filter: 'brightness(0.92) contrast(1.08)' }}
+                          />
+                          {/* Premium subtle light reflection overlay */}
+                          <div
+                            className="absolute inset-0 pointer-events-none"
+                            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 45%)' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </div>
 
-        {/* Right Side: Detailed Project Information */}
-        <div className="lg:col-span-6 space-y-6">
-          <div className="glass-card p-8 rounded-3xl border border-white/10 space-y-6">
-            
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <span className="text-xs font-mono text-white/70 tracking-widest uppercase">
-                // PROJECT DETAILS 0{activeProjectIndex + 1}
-              </span>
-              <span className="px-3 py-1 rounded-full bg-white/10 text-white/80 text-xs font-mono border border-white/30">
-                LATEST RELEASE
-              </span>
-            </div>
+          {/* ── RIGHT: Ultra-Premium Modern Minimalist Project Info ── */}
+          <div className="lg:col-span-5 flex flex-col justify-center gap-6">
 
-            <div>
-              <h3 className="text-3xl font-black font-heading text-white tracking-wide mb-2">
+            <div
+              key={activeProjectIndex}
+              className="space-y-4"
+              style={{ animation: 'premiumReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1)' }}
+            >
+              <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black font-tech text-white tracking-tight leading-[1.05]">
                 {currentProject.title}
               </h3>
-              <p className="text-slate-300 text-base leading-relaxed">
+
+              <p className="text-white/60 text-base leading-relaxed font-light max-w-md pt-1">
                 {currentProject.description}
               </p>
             </div>
 
-            {/* Tech Stack Tags */}
-            <div>
-              <h4 className="text-xs font-mono text-slate-400 uppercase tracking-widest mb-3">TECHNOLOGY STACK</h4>
-              <div className="flex flex-wrap gap-2">
-                {currentProject.tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="px-3 py-1.5 rounded-lg bg-slate-900/80 border border-white/10 text-slate-200 text-xs font-mono font-semibold hover:border-white/50 hover:text-white transition-colors"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+            {/* Tech stack tags */}
+            <div className="flex flex-wrap gap-2 pt-2">
+              {currentProject.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-3.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 text-white/60 text-xs font-mono font-medium tracking-wider hover:text-white hover:border-white/30 transition-all duration-300"
+                >
+                  {tag}
+                </span>
+              ))}
             </div>
 
-            {/* Links CTA */}
-            <div className="flex items-center gap-4 pt-4 border-t border-white/10">
+            {/* Premium Preview Button */}
+            <div className="pt-2">
               <a
                 href={currentProject.liveUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black font-bold text-xs tracking-wider uppercase shadow-lg shadow-white/20 hover:scale-105 transition-all"
+                className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white text-black font-extrabold text-xs tracking-[0.15em] uppercase shadow-[0_10px_35px_rgba(255,255,255,0.2)] hover:shadow-[0_12px_45px_rgba(255,255,255,0.4)] hover:scale-105 transition-all duration-300"
               >
-                <span>LAUNCH PROJECT</span>
+                <span>Preview Project</span>
                 <ExternalLink className="w-4 h-4" />
-              </a>
-
-              <a
-                href={currentProject.githubUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 px-6 py-3 rounded-full glass-panel border border-white/10 text-slate-300 hover:text-white font-bold text-xs tracking-wider uppercase hover:border-white/50 transition-all"
-              >
-                <Code2 className="w-4 h-4 text-white" />
-                <span>SOURCE CODE</span>
               </a>
             </div>
 
           </div>
         </div>
 
-      </div>
-    </section>
+        {/* ── BOTTOM BAR — "More Projects" appears prominently when finished ── */}
+        <div className="shrink-0 pt-4 z-10 flex items-center justify-end">
+          <a
+            href="/projects"
+            className={`inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white text-black font-extrabold text-xs tracking-[0.15em] uppercase shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:scale-105 transition-all duration-500 group ${
+              isFinished ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6 pointer-events-none'
+            }`}
+          >
+            <span>More Projects</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </a>
+        </div>
+
+      </section>
+
+      {/* Premium reveal animation keyframes */}
+      <style>{`
+        @keyframes premiumReveal {
+          0% {
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+            filter: blur(4px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0px);
+          }
+        }
+      `}</style>
+    </div>
   );
 }

@@ -1,7 +1,13 @@
-import React from 'react';
-import { Search, PenTool, Code2, Rocket, CheckCircle2 } from 'lucide-react';
+import React, { useRef, useEffect } from 'react';
+import { Search, PenTool, Code2, Rocket } from 'lucide-react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 export default function HowIWork({ onOpenContact }) {
+  const sectionRef = useRef(null);
+  const headerRef = useRef(null);
+  const cardsRef = useRef([]);
+
   const phases = [
     {
       icon: Search,
@@ -33,22 +39,63 @@ export default function HowIWork({ onOpenContact }) {
     }
   ];
 
-  return (
-    <section id="process" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // 1. Header fade & slide up
+      gsap.fromTo(
+        headerRef.current,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 75%',
+            toggleActions: 'play none none reverse',
+          },
+        }
+      );
 
-      {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <div className="flex items-center justify-center gap-3 mb-3">
-          <span className="w-8 h-[2px] bg-white"></span>
-          <span className="font-mono text-xs uppercase tracking-widest text-white/70">PROCESS</span>
-          <span className="w-8 h-[2px] bg-white"></span>
-        </div>
-        <h2 className="text-4xl sm:text-5xl font-bold font-tech text-white tracking-tight mb-4">
-          FROM IDEA TO LAUNCH
+      // 2. Timeline cards staggered scroll reveal
+      cardsRef.current.forEach((card, idx) => {
+        if (!card) return;
+        const isLeft = idx % 2 === 0;
+        gsap.fromTo(
+          card,
+          {
+            opacity: 0,
+            x: isLeft ? -80 : 80,
+            y: 30,
+          },
+          {
+            opacity: 1,
+            x: 0,
+            y: 0,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 80%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        );
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section ref={sectionRef} id="process" className="relative py-28 px-5 sm:px-10 lg:px-14 max-w-[1600px] mx-auto overflow-hidden select-none">
+
+      {/* Header — Aligned with About & Featured Work style */}
+      <div ref={headerRef} className="mb-16">
+        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-tech text-white tracking-tight leading-none mb-4">
+          HOW I WORK
         </h2>
-        <p className="text-slate-400 text-base">
-          A battle-tested four-phase workflow built for speed, clarity, and zero surprises.
-        </p>
       </div>
 
       {/* Timeline */}
@@ -66,60 +113,33 @@ export default function HowIWork({ onOpenContact }) {
                 <div className="absolute left-6 md:left-1/2 top-0 md:top-1/2 -translate-x-1/2 md:-translate-y-1/2 z-10">
                   <div className="relative w-12 h-12 rounded-full glass-panel border border-white/20 flex items-center justify-center bg-[#0a0a0a]">
                     <IconComponent className="w-5 h-5 text-white" />
-                    <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 font-mono text-[10px] text-slate-500 font-bold tracking-widest">
-                      0{idx + 1}
-                    </span>
                   </div>
                 </div>
 
-                {/* Card */}
-                <div className={`ml-16 md:ml-0 w-full md:w-[calc(50%-4rem)] ${isLeft ? 'md:mr-auto md:pr-0' : 'md:ml-auto'}`}>
-                  <div className="glass-card p-8 rounded-3xl border border-white/10 hover:border-white/30 transition-all duration-300 group">
-                    <div className="flex items-center justify-between mb-6">
-                      <span className="font-mono text-xs text-slate-500 font-bold tracking-widest">
+                {/* Card — No hover effects */}
+                <div
+                  ref={(el) => (cardsRef.current[idx] = el)}
+                  className={`ml-16 md:ml-0 w-full md:w-[calc(50%-4rem)] ${isLeft ? 'md:mr-auto md:pr-0' : 'md:ml-auto'}`}
+                >
+                  <div className="glass-card p-7 rounded-3xl border border-white/10">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="font-mono text-xs text-white/40 font-bold tracking-widest uppercase">
                         PHASE 0{idx + 1}
                       </span>
                     </div>
 
-                    <h3 className="font-tech font-bold text-xl text-white tracking-wider mb-2 group-hover:text-white transition-colors">
+                    <h3 className="font-tech font-bold text-xl text-white tracking-wider mb-3">
                       {phase.title}
                     </h3>
-                    <p className="text-xs font-mono text-white/60 mb-4 tracking-wider uppercase">
-                      {phase.subtitle}
-                    </p>
-                    <p className="text-slate-300 text-sm leading-relaxed mb-6">
+                    
+                    <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-light">
                       {phase.description}
                     </p>
-
-                    <div className="pt-6 border-t border-white/10 space-y-2">
-                      <div className="text-[11px] font-mono text-slate-400 uppercase tracking-widest mb-3">KEY DELIVERABLES</div>
-                      <div className="grid grid-cols-2 gap-2">
-                        {phase.deliverables.map((item, dIdx) => (
-                          <div key={dIdx} className="flex items-center gap-2 text-xs text-slate-300">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-white/70 shrink-0" />
-                            <span>{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* CTA Footer */}
-      <div className="mt-20 text-center">
-        <div className="inline-flex items-center gap-4 p-4 glass-panel rounded-full border border-white/10">
-          <span className="text-xs font-mono text-slate-300 pl-4">READY TO START YOUR PROJECT?</span>
-          <button
-            onClick={onOpenContact}
-            className="px-6 py-2.5 rounded-full bg-white text-black font-bold text-xs tracking-wider uppercase hover:scale-105 transition-all"
-          >
-            LET'S BUILD TOGETHER
-          </button>
         </div>
       </div>
 

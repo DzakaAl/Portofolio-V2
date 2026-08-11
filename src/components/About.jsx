@@ -33,11 +33,12 @@ export default function About() {
       // 1. Title reveal animation
       gsap.fromTo(
         titleRef.current,
-        { opacity: 0, x: -60 },
+        { opacity: 0, x: -100, filter: 'blur(10px)' },
         {
           opacity: 1,
           x: 0,
-          duration: 1,
+          filter: 'blur(0px)',
+          duration: 1.2,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: sectionRef.current,
@@ -50,12 +51,13 @@ export default function About() {
       // 2. Text paragraph slide-up reveal
       gsap.fromTo(
         textRef.current,
-        { opacity: 0, y: 40 },
+        { opacity: 0, y: 70, filter: 'blur(8px)' },
         {
           opacity: 1,
           y: 0,
-          duration: 1,
-          delay: 0.2,
+          filter: 'blur(0px)',
+          duration: 1.2,
+          delay: 0.15,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: sectionRef.current,
@@ -65,15 +67,16 @@ export default function About() {
         }
       );
 
-      // 3. Card photo scale-in & rotation reveal
+      // 3. Card photo 3D perspective reveal
       gsap.fromTo(
         photoRef.current,
-        { opacity: 0, scale: 0.85, rotationY: 15 },
+        { opacity: 0, scale: 0.75, rotationY: 35, y: 50 },
         {
           opacity: 1,
           scale: 1,
           rotationY: 0,
-          duration: 1.2,
+          y: 0,
+          duration: 1.4,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: sectionRef.current,
@@ -86,16 +89,16 @@ export default function About() {
       // 4. Logo loop fade-in reveal
       gsap.fromTo(
         logoLoopRef.current,
-        { opacity: 0, y: 30 },
+        { opacity: 0, y: 50 },
         {
           opacity: 1,
           y: 0,
-          duration: 1,
-          delay: 0.4,
+          duration: 1.2,
+          delay: 0.3,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: 'top 55%',
+            start: 'top 60%',
             toggleActions: 'play none none reverse',
           },
         }
@@ -109,7 +112,7 @@ export default function About() {
     <section
       ref={sectionRef}
       id="about"
-      className="relative min-h-screen flex flex-col justify-between py-20 px-6 sm:px-12 lg:px-20 pl-[3%] lg:pl-[4%] w-full overflow-hidden bg-black select-none"
+      className="relative min-h-screen flex flex-col justify-between py-20 px-5 sm:px-10 lg:px-14 max-w-[1600px] mx-auto overflow-hidden select-none"
     >
       {/* Subtle Glow background highlight */}
       <div className="absolute top-1/2 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
@@ -117,7 +120,7 @@ export default function About() {
       <div className="w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-center z-10 my-auto py-8">
         
         {/* Left Section: Single Paragraph explaining about me */}
-        <div className="lg:col-span-7 space-y-6 lg:pl-[5%]">
+        <div className="lg:col-span-7 space-y-6">
           <h2 ref={titleRef} className="text-4xl sm:text-5xl lg:text-6xl font-bold font-tech text-white tracking-tight mb-6">
             ABOUT ME
           </h2>
@@ -154,8 +157,8 @@ export default function About() {
           gap={56}
           fadeOut={true}
           fadeOutColor="#000000"
-          pauseOnHover={true}
-          scaleOnHover={true}
+          pauseOnHover={false}
+          scaleOnHover={false}
         />
       </div>
 
