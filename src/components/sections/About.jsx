@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import LogoLoop from './LogoLoop';
+import LogoLoop from '../ui/LogoLoop';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import portraitImg from '../../assets/portrait.jpeg';
 
 export default function About() {
   const sectionRef = useRef(null);
@@ -125,7 +126,7 @@ export default function About() {
             ABOUT ME
           </h2>
 
-          <div ref={textRef} className="text-slate-300 text-base sm:text-lg lg:text-xl leading-relaxed text-justify font-normal">
+          <div ref={textRef} className="text-slate-300 text-base sm:text-lg lg:text-xl leading-relaxed text-left font-normal">
             <p>
               I am a Lead Creative Technologist & Full-Stack Architect with over 8 years of experience building high-impact digital solutions, scalable web systems, and modern interactive user experiences. My focus lies in unifying minimalist design aesthetics with robust software engineering practices to solve complex real-world problems. Throughout my journey, I have engineered diverse software applications ranging from responsive enterprise web platforms and data-driven dashboards to machine learning models and high-performance backend API services.
             </p>
@@ -137,9 +138,9 @@ export default function About() {
           <div ref={photoRef} className="max-w-md w-full">
             <div className="rounded-2xl overflow-hidden shadow-2xl">
               <img
-                src="/assets/portrait.jpeg"
+                src={portraitImg}
                 alt="Creator Monochromatic Portrait"
-                className="w-full aspect-[3/4] object-cover filter grayscale contrast-115 block"
+                className="w-full aspect-[3/4] object-cover filter grayscale contrast-110 block"
               />
             </div>
           </div>

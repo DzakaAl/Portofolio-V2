@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
-import soundTrack from '../assets/sound.mp3';
+import soundTrack from '../../assets/sound.mp3';
 
 export default function AudioPlayer({ autoPlayTrigger }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -50,7 +50,7 @@ export default function AudioPlayer({ autoPlayTrigger }) {
   return (
     <button
       onClick={toggleAudio}
-      className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-2.5 rounded-full glass-panel border border-white/20 shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 group ${
+      className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-2.5 rounded-full glass-panel-strong border border-white/20 shadow-[0_12px_40px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all duration-300 hover:scale-105 active:scale-95 group ${
         isPlaying ? 'border-white/50 shadow-white/10' : 'hover:border-white/40'
       }`}
       title={isPlaying ? 'Mute Background Audio' : 'Play Background Audio'}

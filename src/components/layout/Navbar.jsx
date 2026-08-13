@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useId } from 'react';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
+import Button from '../ui/Button';
 
 const useDarkMode = () => {
   const [isDark, setIsDark] = useState(true);
@@ -242,7 +243,7 @@ const navLinks = [
   { href: '#process', label: 'HOW I WORK' },
 ];
 
-export default function Navbar({ onOpenContact }) {
+export default function Navbar({ onOpenContact, onNavigateHome }) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -276,6 +277,27 @@ export default function Navbar({ onOpenContact }) {
     return () => observer.disconnect();
   }, []);
 
+  const handleBrandClick = (e) => {
+    e.preventDefault();
+    if (onNavigateHome) {
+      onNavigateHome();
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleNavClick = (e, targetHash) => {
+    e.preventDefault();
+    if (onNavigateHome) {
+      onNavigateHome(targetHash);
+    } else {
+      const targetElement = document.querySelector(targetHash);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -294,11 +316,8 @@ export default function Navbar({ onOpenContact }) {
         >
           {/* Brand Logo: Soft Sky Blue Icon + Love Light DzakaAl Text */}
           <a
-            href="#hero"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
+            href="/"
+            onClick={handleBrandClick}
             className="flex items-center gap-2.5 group py-1"
           >
             <span className="font-lovelight text-sky-400 text-3xl sm:text-4xl font-semibold leading-none group-hover:text-sky-300 transition-colors drop-shadow-[0_2px_8px_rgba(56,189,248,0.3)]">
@@ -314,6 +333,7 @@ export default function Navbar({ onOpenContact }) {
                 <a
                   key={link.href}
                   href={link.href}
+                  onClick={(e) => handleNavClick(e, link.href)}
                   aria-current={isActive ? 'true' : undefined}
                   className={`transition-all duration-300 text-sm drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] ${
                     isActive
@@ -329,21 +349,20 @@ export default function Navbar({ onOpenContact }) {
 
           {/* CTA Action Button */}
           <div className="hidden md:flex items-center gap-4">
-            <button
+            <Button
               onClick={onOpenContact}
-              className="group overflow-hidden rounded-full p-[1px] font-semibold text-sm transition-transform active:scale-95 shadow-lg"
+              variant="secondary"
+              icon={ArrowUpRight}
+              size="sm"
             >
-              <span className="relative flex items-center gap-2 px-5 py-2 bg-black/90 rounded-full text-white group-hover:bg-white group-hover:text-black transition-all font-bold">
-                <span>LET'S TALK</span>
-                <ArrowUpRight className="w-4 h-4 text-white group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </span>
-            </button>
+              LET'S TALK
+            </Button>
           </div>
 
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-white hover:text-slate-200 focus:outline-none drop-shadow"
+            className="md:hidden p-2 text-white hover:text-slate-200 focus:outline-none drop-shadow cursor-pointer"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -358,7 +377,10 @@ export default function Navbar({ onOpenContact }) {
                 <a
                   key={link.href}
                   href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={(e) => {
+                    setMobileMenuOpen(false);
+                    handleNavClick(e, link.href);
+                  }}
                   aria-current={isActive ? 'true' : undefined}
                   className={`font-medium tracking-wider text-sm py-2 transition-colors ${
                     isActive ? 'text-white' : 'text-slate-200 hover:text-white'
@@ -368,16 +390,17 @@ export default function Navbar({ onOpenContact }) {
                 </a>
               );
             })}
-            <button
+            <Button
               onClick={() => {
                 setMobileMenuOpen(false);
                 onOpenContact();
               }}
-              className="flex items-center justify-center gap-2 w-full py-3 bg-white rounded-xl text-black font-semibold text-sm mt-2"
+              variant="primary"
+              icon={ArrowUpRight}
+              className="w-full mt-2"
             >
-              <span>LET'S TALK</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
+              LET'S TALK
+            </Button>
           </div>
         )}
       </div>

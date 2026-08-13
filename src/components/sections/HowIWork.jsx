@@ -2,8 +2,9 @@ import React, { useRef, useEffect } from 'react';
 import { Search, PenTool, Code2, Rocket } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Card from '../ui/Card';
 
-export default function HowIWork({ onOpenContact }) {
+export default function HowIWork() {
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
   const cardsRef = useRef([]);
@@ -14,54 +15,52 @@ export default function HowIWork({ onOpenContact }) {
       title: "DISCOVER & STRATEGY",
       subtitle: "Requirement Mapping",
       description: "Defining scope, goals, and constraints upfront so the project starts with a clear direction and measurable outcomes.",
-      deliverables: ["Requirement Blueprint", "Tech Stack Proposal", "Project Roadmap", "Milestones"]
     },
     {
       icon: PenTool,
       title: "DESIGN & PROTOTYPE",
       subtitle: "UI/UX & Interactive Mockups",
-      description: "Translating requirements into wireframes, a cohesive design system, and a clickable prototype before a single line of code.",
-      deliverables: ["Wireframes & Sitemaps", "Design System", "Interactive Prototype", "Feedback Rounds"]
+      description: "Translating requirements into wireframes, a cohesive design system, and a clickable prototype before writing code.",
     },
     {
       icon: Code2,
       title: "BUILD & INTEGRATE",
       subtitle: "Engineering & Integration",
       description: "Shipping in iterative sprints with code reviews, API integrations, and custom features refined at every step.",
-      deliverables: ["Weekly Sprints", "Code Reviews", "API Integrations", "Custom Features"]
     },
     {
       icon: Rocket,
       title: "LAUNCH & GROW",
       subtitle: "Deployment & Support",
       description: "Final QA, performance tuning, and a smooth handoff — then monitoring and iterating after launch.",
-      deliverables: ["QA & Performance Audit", "CI/CD Deployment", "Documentation", "Post-Launch Support"]
     }
   ];
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       // 1. Header fade & slide up
-      gsap.fromTo(
-        headerRef.current,
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 75%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      );
+      if (headerRef.current) {
+        gsap.fromTo(
+          headerRef.current,
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 75%',
+            },
+          }
+        );
+      }
 
       // 2. Timeline cards staggered scroll reveal
       cardsRef.current.forEach((card, idx) => {
         if (!card) return;
         const isLeft = idx % 2 === 0;
+
         gsap.fromTo(
           card,
           {
@@ -78,7 +77,6 @@ export default function HowIWork({ onOpenContact }) {
             scrollTrigger: {
               trigger: card,
               start: 'top 80%',
-              toggleActions: 'play none none reverse',
             },
           }
         );
@@ -91,7 +89,7 @@ export default function HowIWork({ onOpenContact }) {
   return (
     <section ref={sectionRef} id="process" className="relative py-28 px-5 sm:px-10 lg:px-14 max-w-[1600px] mx-auto overflow-hidden select-none">
 
-      {/* Header — Aligned with About & Featured Work style */}
+      {/* Header */}
       <div ref={headerRef} className="mb-16">
         <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-tech text-white tracking-tight leading-none mb-4">
           HOW I WORK
@@ -107,6 +105,7 @@ export default function HowIWork({ onOpenContact }) {
           {phases.map((phase, idx) => {
             const IconComponent = phase.icon;
             const isLeft = idx % 2 === 0;
+
             return (
               <div key={idx} className={`relative flex md:items-center ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'} flex-col`}>
                 {/* Node Marker */}
@@ -116,15 +115,18 @@ export default function HowIWork({ onOpenContact }) {
                   </div>
                 </div>
 
-                {/* Card — No hover effects */}
+                {/* Card */}
                 <div
                   ref={(el) => (cardsRef.current[idx] = el)}
                   className={`ml-16 md:ml-0 w-full md:w-[calc(50%-4rem)] ${isLeft ? 'md:mr-auto md:pr-0' : 'md:ml-auto'}`}
                 >
-                  <div className="glass-card p-7 rounded-3xl border border-white/10">
+                  <Card variant="glass" hoverEffect={false}>
                     <div className="flex items-center justify-between mb-3">
                       <span className="font-mono text-xs text-white/40 font-bold tracking-widest uppercase">
                         PHASE 0{idx + 1}
+                      </span>
+                      <span className="text-xs font-mono text-sky-400/90 tracking-wider">
+                        {phase.subtitle}
                       </span>
                     </div>
 
@@ -135,7 +137,7 @@ export default function HowIWork({ onOpenContact }) {
                     <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-light">
                       {phase.description}
                     </p>
-                  </div>
+                  </Card>
                 </div>
               </div>
             );

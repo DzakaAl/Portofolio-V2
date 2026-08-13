@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import spidermanVideo from '../assets/spiderman.mp4';
+import spidermanVideo from '../../assets/spiderman.mp4';
 
 export default function CloudVideoHover({ isHovered }) {
   const canvasRef = useRef(null);

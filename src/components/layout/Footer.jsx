@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowUp, Heart, Globe, Sparkles } from 'lucide-react';
+import Button from '../ui/Button';
 
 export default function Footer({ onOpenContact }) {
   const scrollToTop = () => {
@@ -34,12 +35,13 @@ export default function Footer({ onOpenContact }) {
           </div>
 
           <div className="pt-3">
-            <button
+            <Button
               onClick={onOpenContact}
-              className="px-9 py-4 rounded-full bg-white text-black font-extrabold text-xs tracking-[0.15em] uppercase shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:shadow-[0_0_45px_rgba(255,255,255,0.5)] hover:scale-105 transition-all duration-300"
+              variant="primary"
+              size="lg"
             >
               GET IN TOUCH
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -54,17 +56,18 @@ export default function Footer({ onOpenContact }) {
             <a href="#about" className="hover:text-white transition-colors">ABOUT ME</a>
             <a href="#work" className="hover:text-white transition-colors">FEATURED WORK</a>
             <a href="#process" className="hover:text-white transition-colors">HOW I WORK</a>
-            <button onClick={onOpenContact} className="hover:text-white transition-colors">CONTACT</button>
+            <button onClick={onOpenContact} className="hover:text-white transition-colors cursor-pointer">CONTACT</button>
           </div>
 
-          <button
+          <Button
             onClick={scrollToTop}
-            className="flex items-center gap-2 p-2.5 rounded-full glass-panel border border-white/10 hover:border-white/50 hover:text-white transition-all"
-            title="Back to Top"
+            variant="ghost"
+            size="sm"
+            icon={ArrowUp}
+            iconPosition="right"
           >
-            <span className="text-[10px] tracking-wider uppercase">BACK TO TOP</span>
-            <ArrowUp className="w-4 h-4 text-white" />
-          </button>
+            BACK TO TOP
+          </Button>
         </div>
 
       </div>

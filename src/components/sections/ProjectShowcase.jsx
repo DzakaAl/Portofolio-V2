@@ -2,53 +2,27 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ExternalLink, ArrowRight } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { getFeaturedProjects } from '../../data/projects';
+import Button from '../ui/Button';
 
-export default function ProjectShowcase() {
+export default function ProjectShowcase({ onNavigateToProjects }) {
   const [activeProjectIndex, setActiveProjectIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const [projects, setProjects] = useState([]);
 
   const containerRef = useRef(null);
   const pinnedRef = useRef(null);
 
-  const projects = [
-    {
-      id: 'cyber-arcade',
-      title: 'CYBER ARCADE 2099',
-      subtitle: 'WebGL Synthwave Fighter Game',
-      category: 'GAME DEV / WEBGL',
-      description: 'Interactive high-speed synthwave arcade spaceship battle game engine built with React Three Fiber, custom shaders, and spatial audio.',
-      tags: ['REACT', 'THREE.JS', 'WEBGL', 'TAILWIND', 'GLSL'],
-      image: '/assets/synthwave-game.jpg',
-      stats: { fps: '60 FPS', rank: 'A+', year: '2026' },
-      liveUrl: 'https://example.com',
-      githubUrl: 'https://github.com'
-    },
-    {
-      id: 'neon-vault',
-      title: 'NEON VAULT dAPP',
-      subtitle: 'Futuristic Crypto Asset Interface',
-      category: 'WEB3 / FINTECH',
-      description: 'Decentralized liquidity vault management protocol featuring real-time interactive charts, dark mode glassmorphism UI, and smart contract integration.',
-      tags: ['REACT', 'ETHERS.JS', 'SOLIDITY', 'TAILWIND', 'VIEM'],
-      image: '/assets/synthwave-game.jpg',
-      stats: { tvl: '$42M', rank: 'PRO', year: '2025' },
-      liveUrl: 'https://example.com',
-      githubUrl: 'https://github.com'
-    },
-    {
-      id: 'aether-engine',
-      title: 'AETHER 3D STUDIO',
-      subtitle: 'Realtime Browser Renderer',
-      category: 'CREATIVE TOOL',
-      description: 'Browser-based node renderer and shader editor designed for 3D artists, game creators, and visual experience designers.',
-      tags: ['REACT', 'WEBGPU', 'CANVAS', 'TYPESCRIPT'],
-      image: '/assets/synthwave-game.jpg',
-      stats: { speed: '120Hz', rank: 'S-TIER', year: '2026' },
-      liveUrl: 'https://example.com',
-      githubUrl: 'https://github.com'
-    }
-  ];
+  useEffect(() => {
+    let mounted = true;
+    getFeaturedProjects().then((data) => {
+      if (mounted) setProjects(data);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const currentProject = projects[activeProjectIndex];
 
@@ -171,80 +145,93 @@ export default function ProjectShowcase() {
           </div>
 
           {/* ── RIGHT: Ultra-Premium Modern Minimalist Project Info ── */}
-          <div className="lg:col-span-5 flex flex-col justify-center gap-6">
+          <div className="lg:col-span-5 flex flex-col justify-center gap-6 relative min-h-[360px] py-4">
+            {projects.map((project, index) => {
+              const offset = index - scrollProgress;
+              const absOffset = Math.abs(offset);
 
-            <div
-              key={activeProjectIndex}
-              className="space-y-4"
-              style={{ animation: 'premiumReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1)' }}
-            >
-              <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black font-tech text-white tracking-tight leading-[1.05]">
-                {currentProject.title}
-              </h3>
+              if (absOffset > 0.99) return null;
 
-              <p className="text-white/60 text-base leading-relaxed font-light max-w-md pt-1">
-                {currentProject.description}
-              </p>
-            </div>
+              // GSAP / Scroll progress based sync transformations for text elements
+              const translateY = offset * 60; // Smooth vertical sliding transition
+              const opacity = Math.max(0, 1 - absOffset * 1.8);
+              const scale = 1 - absOffset * 0.08;
+              // Micro subtle blur - sangat sebentar dan ringan
+              const filterBlur = absOffset > 0.1 ? Math.min((absOffset - 0.1) * 4, 2) : 0;
 
-            {/* Tech stack tags */}
-            <div className="flex flex-wrap gap-2 pt-2">
-              {currentProject.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 text-white/60 text-xs font-mono font-medium tracking-wider hover:text-white hover:border-white/30 transition-all duration-300"
+              return (
+                <div
+                  key={project.id}
+                  style={{
+                    transform: `translate3d(0, ${translateY}px, 0) scale(${scale})`,
+                    opacity,
+                    filter: `blur(${filterBlur}px)`,
+                    transition: 'transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease, filter 0.15s ease',
+                    pointerEvents: absOffset < 0.3 ? 'auto' : 'none',
+                  }}
+                  className="absolute inset-0 flex flex-col justify-center gap-6 py-2 px-2"
                 >
-                  {tag}
-                </span>
-              ))}
-            </div>
+                  <div className="space-y-4">
 
-            {/* Premium Preview Button */}
-            <div className="pt-2">
-              <a
-                href={currentProject.liveUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white text-black font-extrabold text-xs tracking-[0.15em] uppercase shadow-[0_10px_35px_rgba(255,255,255,0.2)] hover:shadow-[0_12px_45px_rgba(255,255,255,0.4)] hover:scale-105 transition-all duration-300"
-              >
-                <span>Preview Project</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </div>
+                    <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black font-tech text-white tracking-tight leading-[1.05]">
+                      {project.title}
+                    </h3>
 
+                    <p className="text-white/60 text-base leading-relaxed font-light max-w-md pt-1">
+                      {project.description}
+                    </p>
+                  </div>
+
+                  {/* Tech stack tags */}
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {project.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-3.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 text-white/60 text-xs font-mono font-medium tracking-wider transition-all duration-300"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Premium Preview Button */}
+                  <div className="pt-2">
+                    <Button
+                      href={project.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      variant="primary"
+                      size="lg"
+                      icon={ExternalLink}
+                    >
+                      Preview Project
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* ── BOTTOM BAR — "More Projects" appears prominently when finished ── */}
         <div className="shrink-0 pt-4 z-10 flex items-center justify-end">
-          <a
-            href="/projects"
-            className={`inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white text-black font-extrabold text-xs tracking-[0.15em] uppercase shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:scale-105 transition-all duration-500 group ${
+          <Button
+            onClick={(e) => {
+              if (e) e.preventDefault();
+              if (onNavigateToProjects) onNavigateToProjects();
+            }}
+            variant="primary"
+            size="md"
+            icon={ArrowRight}
+            className={`transition-all duration-500 ${
               isFinished ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-6 pointer-events-none'
             }`}
           >
-            <span>More Projects</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </a>
+            More Projects
+          </Button>
         </div>
 
       </section>
-
-      {/* Premium reveal animation keyframes */}
-      <style>{`
-        @keyframes premiumReveal {
-          0% {
-            opacity: 0;
-            transform: translateY(20px) scale(0.98);
-            filter: blur(4px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            filter: blur(0px);
-          }
-        }
-      `}</style>
     </div>
   );
 }
