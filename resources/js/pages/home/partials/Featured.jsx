@@ -4,12 +4,14 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { getFeaturedProjects } from '../../../api';
 import Button from '../../../components/ui/Button';
+import ProjectPreviewModal from '../../../components/ui/ProjectPreviewModal';
 
-export default function ProjectShowcase({ onNavigateToProjects }) {
+export default function ProjectShowcase({ onNavigateToProjects, onOpenContact }) {
   const [activeProjectIndex, setActiveProjectIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [projects, setProjects] = useState([]);
+  const [previewProject, setPreviewProject] = useState(null);
 
   const containerRef = useRef(null);
   const pinnedRef = useRef(null);
@@ -197,9 +199,7 @@ export default function ProjectShowcase({ onNavigateToProjects }) {
                   {/* Premium Preview Button */}
                   <div className="pt-2">
                     <Button
-                      href={project.link}
-                      target="_blank"
-                      rel="noreferrer"
+                      onClick={() => setPreviewProject(project)}
                       variant="primary"
                       size="lg"
                       icon={ExternalLink}
@@ -232,6 +232,14 @@ export default function ProjectShowcase({ onNavigateToProjects }) {
         </div>
 
       </section>
+
+      {/* Render ProjectPreviewModal under section */}
+      <ProjectPreviewModal
+        isOpen={Boolean(previewProject)}
+        onClose={() => setPreviewProject(null)}
+        project={previewProject}
+        onOpenContact={onOpenContact}
+      />
     </div>
   );
 }

@@ -2,9 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\About;
 use App\Models\Message;
-use App\Models\Project;
 use App\Models\TechStack;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -23,16 +21,6 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Admin Portfolio',
                 'password' => Hash::make('password123'),
-            ]
-        );
-
-        // Initial About Me Content
-        About::updateOrCreate(
-            ['id' => 1],
-            [
-                'title' => 'ABOUT ME',
-                'description' => 'I am a Lead Creative Technologist & Full-Stack Architect with over 8 years of experience building high-impact digital solutions, scalable web systems, and modern interactive user experiences. My focus lies in unifying minimalist design aesthetics with robust software engineering practices to solve complex real-world problems. Throughout my journey, I have engineered diverse software applications ranging from responsive enterprise web platforms and data-driven dashboards to machine learning models and high-performance backend API services.',
-                'image_url' => null,
             ]
         );
 
@@ -59,47 +47,6 @@ class DatabaseSeeder extends Seeder
             TechStack::updateOrCreate(
                 ['title' => $stack['title']],
                 $stack
-            );
-        }
-
-        // Initial Projects
-        $projectsList = [
-            [
-                'slug' => 'cyber-arcade',
-                'title' => 'CYBER ARCADE 2099',
-                'description' => 'Interactive high-speed synthwave arcade spaceship battle game engine built with React Three Fiber, custom shaders, and spatial audio.',
-                'tags' => ['REACT', 'THREE.JS', 'WEBGL', 'GLSL'],
-                'image' => 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80',
-                'link' => 'https://example.com',
-                'featured' => true,
-                'order' => 1,
-            ],
-            [
-                'slug' => 'neon-vault',
-                'title' => 'NEON VAULT dAPP',
-                'description' => 'Decentralized liquidity vault management protocol featuring real-time interactive charts, dark mode glassmorphism UI, and smart contract integration.',
-                'tags' => ['REACT', 'ETHERS.JS', 'SOLIDITY', 'TAILWIND'],
-                'image' => 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=800&q=80',
-                'link' => 'https://example.com',
-                'featured' => true,
-                'order' => 2,
-            ],
-            [
-                'slug' => 'aether-engine',
-                'title' => 'AETHER 3D STUDIO',
-                'description' => 'Browser-based node renderer and shader editor designed for 3D artists, game creators, and visual experience designers.',
-                'tags' => ['REACT', 'WEBGPU', 'CANVAS', 'TYPESCRIPT'],
-                'image' => 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
-                'link' => 'https://example.com',
-                'featured' => true,
-                'order' => 3,
-            ],
-        ];
-
-        foreach ($projectsList as $proj) {
-            Project::updateOrCreate(
-                ['slug' => $proj['slug']],
-                $proj
             );
         }
 

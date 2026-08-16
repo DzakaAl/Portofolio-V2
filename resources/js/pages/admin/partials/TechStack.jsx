@@ -131,18 +131,15 @@ export default function TechStack({ onShowMessage, onTechStacksCountChange }) {
   return (
     <div className="space-y-8">
       {/* Header Bar with Add Tech Stack Modal Trigger */}
-      <div className="glass-panel p-6 rounded-2xl flex items-center justify-between">
+      <div className="glass-panel p-4 sm:p-6 rounded-2xl flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold font-tech text-white uppercase tracking-tight">
-            TECH STACKS LOGOS ({techStacks.length})
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold font-tech text-white uppercase tracking-tight">
+            Tech Stacks
           </h2>
-          <p className="text-slate-400 text-xs mt-1">
-            Drag & drop kartu logo di bawah ini untuk mengatur urutan marquee slider.
-          </p>
         </div>
 
         <Button onClick={handleOpenAddModal} variant="primary" icon={Plus} size="sm">
-          TAMBAH LOGO
+          TAMBAH
         </Button>
       </div>
 

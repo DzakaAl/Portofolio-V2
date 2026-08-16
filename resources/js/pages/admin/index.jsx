@@ -44,17 +44,8 @@ export default function AdminPage({ onLogout, onBackHome }) {
       />
 
       {/* RIGHT MAIN WORKSPACE CONTENT */}
-      <main className="flex-1 overflow-y-auto h-screen p-8 lg:p-12 relative z-10 space-y-8">
+      <main className="flex-1 overflow-y-auto h-screen p-4 sm:p-6 lg:p-12 pt-20 lg:pt-12 relative z-10 space-y-6 sm:space-y-8">
         
-        {/* Header Banner */}
-        <div className="pb-6 border-b border-white/10 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-extrabold font-tech text-white uppercase tracking-tight mt-1 flex items-center gap-3">
-              ADMIN CONTROL CENTER
-            </h1>
-          </div>
-        </div>
-
         {/* Alert Notification */}
         {message.text && (
           <div

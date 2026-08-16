@@ -38,10 +38,10 @@ export default function Button({
   };
 
   const sizeStyles = {
-    sm: 'px-4 py-2 text-xs',
-    md: 'px-6 py-3 text-xs',
-    lg: 'px-8 py-4 text-xs',
-    icon: 'w-10 h-10 sm:w-11 sm:h-11 p-0',
+    sm: 'px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs',
+    md: 'px-4 py-2 sm:px-6 sm:py-3 text-[11px] sm:text-xs',
+    lg: 'px-6 py-3 sm:px-8 sm:py-4 text-[11px] sm:text-xs',
+    icon: 'w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11 p-0',
   };
 
   const combinedClasses = `${baseStyles} ${variantStyles[variant] || variantStyles.primary} ${

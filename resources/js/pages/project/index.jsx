@@ -5,6 +5,7 @@ import Navbar from '../../components/layout/Navbar';
 import LetsTalkModal from '../home/partials/LetsTalk';
 import Modal from '../../components/ui/Modal';
 import Button from '../../components/ui/Button';
+import ProjectPreviewModal from '../../components/ui/ProjectPreviewModal';
 import { getProjects } from '../../api';
 
 function useWallConfig() {
@@ -31,6 +32,7 @@ function useWallConfig() {
 export default function LabPage({ onBack }) {
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [previewProject, setPreviewProject] = useState(null);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const { columns, tileWidth, tileHeight } = useWallConfig();
 
@@ -128,9 +130,11 @@ export default function LabPage({ onBack }) {
                   Project · The Lab
                 </span>
                 <Button
-                  href={selectedProject.link}
-                  target="_blank"
-                  rel="noreferrer"
+                  onClick={() => {
+                    const proj = selectedProject;
+                    setSelectedProject(null);
+                    setPreviewProject(proj);
+                  }}
                   variant="primary"
                   size="md"
                   icon={ExternalLink}
@@ -142,6 +146,13 @@ export default function LabPage({ onBack }) {
           </div>
         )}
       </Modal>
+
+      <ProjectPreviewModal
+        isOpen={Boolean(previewProject)}
+        onClose={() => setPreviewProject(null)}
+        project={previewProject}
+        onOpenContact={() => setIsContactOpen(true)}
+      />
 
       <LetsTalkModal
         isOpen={isContactOpen}

@@ -20,14 +20,12 @@ class AboutController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'title' => 'nullable|string|max:255',
             'description' => 'required|string',
             'image_url' => 'nullable|string',
         ]);
 
-        $about = About::firstOrCreate(['id' => 1]);
+        $about = About::firstOrCreate(['id' => 1], ['title' => 'ABOUT ME']);
         $about->update([
-            'title' => $request->input('title', $about->title ?? 'ABOUT ME'),
             'description' => $request->input('description'),
             'image_url' => $request->input('image_url', $about->image_url),
         ]);

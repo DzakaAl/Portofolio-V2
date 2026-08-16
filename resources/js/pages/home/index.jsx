@@ -56,7 +56,10 @@ export default function HomePage({ isLoading, onPreloaderComplete, startAudio, o
       <main>
         <Hero onOpenContact={() => setIsContactOpen(true)} />
         <About />
-        <ProjectShowcase onNavigateToProjects={onNavigateToLab} />
+        <ProjectShowcase
+          onNavigateToProjects={onNavigateToLab}
+          onOpenContact={() => setIsContactOpen(true)}
+        />
         <HowIWork onOpenContact={() => setIsContactOpen(true)} />
       </main>
 

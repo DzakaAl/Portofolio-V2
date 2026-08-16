@@ -165,18 +165,15 @@ export default function Projects({ onShowMessage, onProjectsCountChange }) {
   return (
     <div className="space-y-8">
       {/* Header Bar with Add Project Modal Trigger */}
-      <div className="glass-panel p-6 rounded-2xl flex items-center justify-between">
+      <div className="glass-panel p-4 sm:p-6 rounded-2xl flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold font-tech text-white uppercase tracking-tight">
-            PROJECTS MANAGEMENT ({projects.length})
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold font-tech text-white uppercase tracking-tight">
+            Projects
           </h2>
-          <p className="text-slate-400 text-xs mt-1">
-            Drag & drop kartu project di bawah ini untuk mengatur urutannya.
-          </p>
         </div>
 
         <Button onClick={handleOpenAddModal} variant="primary" icon={Plus} size="sm">
-          TAMBAH PROJECT
+          TAMBAH
         </Button>
       </div>
 
