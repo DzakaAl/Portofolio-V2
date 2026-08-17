@@ -192,9 +192,6 @@ export default function TechStack({ onShowMessage, onTechStacksCountChange }) {
             <h2 className="text-2xl font-bold font-tech text-white uppercase tracking-tight">
               {editingId ? 'EDIT TECH STACK LOGO' : 'TAMBAH LOGO TECH STACK'}
             </h2>
-            <p className="text-slate-400 text-xs mt-1">
-              Masukkan nama teknologi dan URL gambar SVG ikonnya.
-            </p>
           </div>
 
           <form onSubmit={handleSubmitForm} className="space-y-4">

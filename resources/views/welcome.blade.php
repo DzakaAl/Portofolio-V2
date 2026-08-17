@@ -11,6 +11,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Allura&family=Cinzel:wght@500;700;900&family=Love+Light&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+        <!-- Google Identity Services (Sign in with Google) -->
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
 
         @viteReactRefresh
         @vite(['resources/js/main.jsx'])

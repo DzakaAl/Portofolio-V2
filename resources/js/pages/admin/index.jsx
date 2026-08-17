@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { CheckCircle2, AlertCircle, Sparkles, ShieldCheck } from 'lucide-react';
 import Sidebar from '../../components/layout/Sidebar';
-import AdminAboutSection from './partials/About';
-import AdminProjectsSection from './partials/Projects';
-import AdminTechStackSection from './partials/TechStack';
+import About from './partials/About';
+import Projects from './partials/Projects';
+import TechStack from './partials/TechStack';
 import { logoutAdmin } from '../../api';
 
 export default function AdminPage({ onLogout, onBackHome }) {
@@ -66,12 +66,12 @@ export default function AdminPage({ onLogout, onBackHome }) {
 
         {/* SECTION 1: ABOUT ME */}
         {activeTab === 'about' && (
-          <AdminAboutSection onShowMessage={handleShowMessage} />
+          <About onShowMessage={handleShowMessage} />
         )}
 
         {/* SECTION 2: PROJECTS */}
         {activeTab === 'projects' && (
-          <AdminProjectsSection
+          <Projects
             onShowMessage={handleShowMessage}
             onProjectsCountChange={setProjectsCount}
           />
@@ -79,7 +79,7 @@ export default function AdminPage({ onLogout, onBackHome }) {
 
         {/* SECTION 3: TECH STACKS */}
         {activeTab === 'techstack' && (
-          <AdminTechStackSection
+          <TechStack
             onShowMessage={handleShowMessage}
             onTechStacksCountChange={setTechStacksCount}
           />

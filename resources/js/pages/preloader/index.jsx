@@ -1,77 +1,132 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { gsap } from 'gsap';
-import { ArrowRight, CornerDownLeft } from 'lucide-react';
+import soundTrack from '../../assets/sound.mp3';
 
-export default function Preloader({ onComplete }) {
+export default function Preloader({ onComplete, apiPromises = [] }) {
   const [progress, setProgress] = useState(0);
-  const [statusText, setStatusText] = useState('LOADING ASSETS...');
+  const [statusText, setStatusText] = useState('INITIALIZING ASSETS...');
   const [isReady, setIsReady] = useState(false);
 
   const containerRef = useRef(null);
   const percentRef = useRef(null);
   const statusRef = useRef(null);
   const progressBarRef = useRef(null);
-  const enterBtnRef = useRef(null);
 
   useEffect(() => {
-    // True page asset loading logic
-    const images = Array.from(document.images);
-    const videos = Array.from(document.querySelectorAll('video'));
-    const totalAssets = images.length + videos.length + 1;
-    let loadedAssets = 0;
+    let isMounted = true;
 
-    const updateProgress = () => {
-      loadedAssets += 1;
-      const calculated = Math.min(Math.round((loadedAssets / totalAssets) * 100), 99);
-      setProgress((prev) => Math.max(prev, calculated));
-    };
-
-    images.forEach((img) => {
-      if (img.complete) updateProgress();
-      else {
-        img.addEventListener('load', updateProgress);
-        img.addEventListener('error', updateProgress);
-      }
-    });
-
-    videos.forEach((vid) => {
-      if (vid.readyState >= 3) updateProgress();
-      else {
-        vid.addEventListener('canplaythrough', updateProgress);
-        vid.addEventListener('error', updateProgress);
-      }
-    });
-
-    const handleWindowLoad = () => {
-      setProgress(100);
-      setStatusText('PRESS ENTER OR CLICK TO CONTINUE');
-      setIsReady(true);
-    };
-
-    if (document.readyState === 'complete') {
-      handleWindowLoad();
-    } else {
-      window.addEventListener('load', handleWindowLoad);
-    }
-
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setStatusText('PRESS ENTER OR CLICK TO CONTINUE');
-          setIsReady(true);
-          return 100;
-        }
-
-        const next = prev + 3;
-        if (next > 30 && next < 60) setStatusText('LOADING IMAGES & MEDIA...');
-        if (next >= 60 && next < 90) setStatusText('INITIALIZING GSAP ANIMATIONS...');
-        if (next >= 90) setStatusText('FINALIZING PAGE...');
-        return Math.min(next, 99);
+    // Helper untuk membungkus gambar menjadi Promise
+    const loadImage = (src) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(src);
+        img.onerror = () => resolve(src); // Graceful fallback
+        img.src = src;
       });
-    }, 45);
+    };
 
-    // GSAP Intro Entrance
+    // Helper untuk membungkus video menjadi Promise
+    const loadVideo = (videoEl) => {
+      return new Promise((resolve) => {
+        if (videoEl.readyState >= 3) return resolve();
+        videoEl.addEventListener('canplaythrough', () => resolve(), { once: true });
+        videoEl.addEventListener('error', () => resolve(), { once: true });
+      });
+    };
+
+    // Helper untuk membungkus audio/sound menjadi Promise
+    const loadAudio = (srcOrAudio) => {
+      return new Promise((resolve) => {
+        const audio = typeof srcOrAudio === 'string' ? new Audio(srcOrAudio) : srcOrAudio;
+        if (audio.readyState >= 3) return resolve();
+        audio.addEventListener('canplaythrough', () => resolve(), { once: true });
+        audio.addEventListener('error', () => resolve(), { once: true });
+        if (typeof srcOrAudio === 'string') {
+          audio.preload = 'auto';
+          audio.load();
+        }
+      });
+    };
+
+    const startPreloading = async () => {
+      // 1. Ambil semua gambar di DOM
+      const domImages = Array.from(document.images).map((img) => img.src).filter(Boolean);
+      
+      // 2. Ambil background-image CSS
+      const bgImages = Array.from(document.querySelectorAll('*'))
+        .map((el) => window.getComputedStyle(el).backgroundImage)
+        .filter((bg) => bg && bg !== 'none' && bg.startsWith('url('))
+        .map((bg) => bg.replace(/^url\(['"]?/, '').replace(/['"]?\)$/, ''));
+
+      const uniqueImageUrls = Array.from(new Set([...domImages, ...bgImages]));
+
+      // 3. Buat array Promise untuk semua tipe asset
+      const imagePromises = uniqueImageUrls.map(loadImage);
+      const videoPromises = Array.from(document.querySelectorAll('video')).map(loadVideo);
+      const audioElements = Array.from(document.querySelectorAll('audio'));
+      const audioPromises = [
+        loadAudio(soundTrack),
+        ...audioElements.map((aud) => loadAudio(aud)),
+      ];
+      const fontPromise = document.fonts ? document.fonts.ready : Promise.resolve();
+
+      const allAssetPromises = [
+        ...imagePromises,
+        ...videoPromises,
+        ...audioPromises,
+        fontPromise,
+        ...apiPromises,
+      ];
+
+      const totalItems = Math.max(allAssetPromises.length, 1);
+
+      let completedItems = 0;
+
+      // Wrapper untuk memperbarui progress secara real-time saat tiap Promise selesai
+      const trackSinglePromise = (promise) => {
+        return promise
+          .then((res) => {
+            if (isMounted) {
+              completedItems += 1;
+              const currentPercent = Math.min(Math.round((completedItems / totalItems) * 100), 100);
+              setProgress((prev) => Math.max(prev, currentPercent));
+
+              if (currentPercent < 40) setStatusText('LOADING IMAGES & MEDIA...');
+              else if (currentPercent < 80) setStatusText('PRELOADING FONTS & STYLES...');
+              else if (currentPercent < 100) setStatusText('INITIALIZING INTERFACE...');
+            }
+            return res;
+          })
+          .catch((err) => {
+            if (isMounted) {
+              completedItems += 1;
+              const currentPercent = Math.min(Math.round((completedItems / totalItems) * 100), 100);
+              setProgress((prev) => Math.max(prev, currentPercent));
+            }
+            return err;
+          });
+      };
+
+      const trackedPromises = allAssetPromises.map(trackSinglePromise);
+
+      // Timeout pengaman agar preloader tidak stuck jika ada asset yang heng
+      const safetyTimeout = new Promise((resolve) => setTimeout(resolve, 8000));
+
+      await Promise.race([
+        Promise.allSettled(trackedPromises),
+        safetyTimeout,
+      ]);
+
+      if (isMounted) {
+        setProgress(100);
+        setStatusText('PRESS ENTER OR CLICK TO CONTINUE');
+        setIsReady(true);
+      }
+    };
+
+    startPreloading();
+
+    // GSAP Intro Animation
     const ctx = gsap.context(() => {
       gsap.fromTo(
         [percentRef.current, statusRef.current, progressBarRef.current],
@@ -82,14 +137,13 @@ export default function Preloader({ onComplete }) {
           filter: 'blur(0px)',
           duration: 0.8,
           stagger: 0.1,
-          ease: 'power3.out'
+          ease: 'power3.out',
         }
       );
     }, containerRef);
 
     return () => {
-      clearInterval(interval);
-      window.removeEventListener('load', handleWindowLoad);
+      isMounted = false;
       ctx.revert();
     };
   }, []);
@@ -97,7 +151,6 @@ export default function Preloader({ onComplete }) {
   const handleProceed = () => {
     if (!isReady) return;
 
-    // GSAP Outro Exit Animation
     gsap.to(containerRef.current, {
       opacity: 0,
       scale: 1.04,
@@ -106,11 +159,10 @@ export default function Preloader({ onComplete }) {
       ease: 'power3.inOut',
       onComplete: () => {
         onComplete && onComplete();
-      }
+      },
     });
   };
 
-  // Listen for Enter key press when loading reaches 100%
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Enter' && isReady) {
@@ -129,8 +181,6 @@ export default function Preloader({ onComplete }) {
         isReady ? 'cursor-pointer' : 'cursor-wait'
       }`}
     >
-
-      {/* Center Counter — Clean Pure Monochrome */}
       <div className="flex flex-col items-center justify-center space-y-6 my-auto">
         <div ref={percentRef} className="font-tech font-black text-8xl sm:text-[10rem] text-white tracking-tighter leading-none">
           {String(progress).padStart(2, '0')}<span className="text-white/40 text-5xl sm:text-7xl font-bold">%</span>
@@ -139,10 +189,8 @@ export default function Preloader({ onComplete }) {
         <div ref={statusRef} className="font-tech text-xs font-medium text-white/50 tracking-[0.3em] uppercase">
           {statusText}
         </div>
-
       </div>
 
-      {/* Bottom Progress Track — Clean White */}
       <div ref={progressBarRef} className="w-full space-y-3 max-w-xl mx-auto">
         <div className="relative w-full h-[2px] bg-white/10 rounded-full overflow-hidden">
           <div
@@ -158,3 +206,4 @@ export default function Preloader({ onComplete }) {
     </div>
   );
 }
+

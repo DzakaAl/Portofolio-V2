@@ -26,6 +26,7 @@ export default function Projects({ onShowMessage, onProjectsCountChange }) {
     image: '',
     link: '',
     featured: true,
+    show_preview: true,
   });
 
   // Uploaded image file state & preview
@@ -87,6 +88,7 @@ export default function Projects({ onShowMessage, onProjectsCountChange }) {
       image: '',
       link: '',
       featured: true,
+      show_preview: true,
     });
     setIsFormModalOpen(true);
   };
@@ -102,6 +104,7 @@ export default function Projects({ onShowMessage, onProjectsCountChange }) {
       image: proj.image || '',
       link: proj.link || '',
       featured: proj.featured ?? true,
+      show_preview: proj.show_preview ?? true,
     });
     setIsFormModalOpen(true);
   };
@@ -124,6 +127,7 @@ export default function Projects({ onShowMessage, onProjectsCountChange }) {
     formData.append('tags', projectForm.tags);
     formData.append('link', projectForm.link || '');
     formData.append('featured', projectForm.featured ? '1' : '0');
+    formData.append('show_preview', projectForm.show_preview ? '1' : '0');
 
     if (imageFile) {
       formData.append('image_file', imageFile);
@@ -154,119 +158,116 @@ export default function Projects({ onShowMessage, onProjectsCountChange }) {
 
     try {
       await deleteProject(deleteConfirmId);
-      onShowMessage('success', 'Project berhasil dihapus');
+      onShowMessage('success', 'Project berhasil dihapus!');
       setDeleteConfirmId(null);
       fetchProjects();
     } catch (err) {
-      onShowMessage('error', 'Gagal menghapus project.');
+      onShowMessage('error', 'Gagal menghapus project');
     }
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header Bar with Add Project Modal Trigger */}
+    <div className="space-y-6">
+      {/* Header & Button Tambah */}
       <div className="glass-panel p-4 sm:p-6 rounded-2xl flex items-center justify-between gap-4">
         <div>
           <h2 className="text-lg sm:text-xl lg:text-2xl font-bold font-tech text-white uppercase tracking-tight">
-            Projects
+            PROJECTS
           </h2>
         </div>
-
+      
         <Button onClick={handleOpenAddModal} variant="primary" icon={Plus} size="sm">
           TAMBAH
         </Button>
       </div>
 
-      {/* Projects Grid List with Drag & Drop */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((proj, index) => (
+      {/* Drag & Drop Projects List */}
+      <div className="space-y-3">
+        {projects.map((proj, idx) => (
           <div
             key={proj.id}
             draggable
-            onDragStart={(e) => handleDragStart(e, index)}
-            onDragOver={(e) => handleDragOver(e, index)}
+            onDragStart={(e) => handleDragStart(e, idx)}
+            onDragOver={(e) => handleDragOver(e, idx)}
             onDragEnd={handleDragEnd}
-            className={`glass-card overflow-hidden flex flex-col justify-between group rounded-2xl transition-all cursor-grab active:cursor-grabbing border ${
-              draggedIndex === index ? 'opacity-40 border-sky-400 scale-[0.98]' : 'border-white/10 hover:border-white/30'
+            className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border transition-all duration-300 ${
+              draggedIndex === idx
+                ? 'opacity-40 border-sky-400 bg-sky-500/10'
+                : 'bg-black/60 border-white/10 hover:border-white/20'
             }`}
           >
-            <div className="relative aspect-video overflow-hidden">
-              <img src={proj.image} alt={proj.title} className="w-full h-full object-cover" />
-              
-              {/* Drag Handle & Featured Badge */}
-              <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md text-white p-1.5 rounded-lg border border-white/15">
-                <GripVertical className="w-4 h-4 text-white/80" />
+            <div className="flex items-center gap-3">
+              <div className="cursor-grab active:cursor-grabbing text-slate-500 hover:text-white p-1">
+                <GripVertical className="w-5 h-5" />
               </div>
 
-              {proj.featured && (
-                <span className="absolute top-3 right-3 bg-white text-black text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full shadow-lg">
-                  Featured
-                </span>
-              )}
+              <div className="w-16 h-10 rounded-lg overflow-hidden bg-zinc-900 border border-white/10 shrink-0">
+                <img src={proj.image} alt={proj.title} className="w-full h-full object-cover" />
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h4 className="font-tech font-bold text-white text-sm tracking-tight">{proj.title}</h4>
+                  {proj.featured && (
+                    <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 uppercase font-semibold">
+                      Featured
+                    </span>
+                  )}
+                  {proj.show_preview === false && (
+                    <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 uppercase font-semibold">
+                      No Preview
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-400 line-clamp-1 max-w-md">{proj.description}</p>
+              </div>
             </div>
 
-            <div className="p-5 flex-1 flex flex-col justify-between">
-              <div>
-                <h4 className="text-lg font-bold text-white mb-2">{proj.title}</h4>
-                <p className="text-xs text-slate-300 line-clamp-3 leading-relaxed mb-4">{proj.description}</p>
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {(Array.isArray(proj.tags) ? proj.tags : []).map((t, idx) => (
-                    <span key={idx} className="bg-white/10 text-slate-200 text-[10px] px-2 py-0.5 rounded-md font-mono">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-white/10 flex items-center justify-between">
-                {proj.link ? (
-                  <a
-                    href={proj.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs text-slate-300 hover:text-white flex items-center gap-1 font-mono"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" /> Visit Link
-                  </a>
-                ) : <span />}
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleOpenEditModal(proj)}
-                    className="flex items-center gap-1 text-xs font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 px-3 py-1.5 rounded-xl border border-sky-500/20 transition-all cursor-pointer"
-                  >
-                    <Edit className="w-3.5 h-3.5" /> EDIT
-                  </button>
-
-                  <button
-                    onClick={() => setDeleteConfirmId(proj.id)}
-                    className="flex items-center gap-1 text-xs font-bold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-xl border border-red-500/20 transition-all cursor-pointer"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" /> DELETE
-                  </button>
-                </div>
-              </div>
+            <div className="flex items-center gap-2 self-end sm:self-center">
+              <Button
+                variant="glass"
+                size="sm"
+                icon={Edit}
+                onClick={() => handleOpenEditModal(proj)}
+              >
+                EDIT
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                icon={Trash2}
+                onClick={() => setDeleteConfirmId(proj.id)}
+              >
+                HAPUS
+              </Button>
             </div>
           </div>
         ))}
+
+        {projects.length === 0 && (
+          <div className="p-12 text-center border border-dashed border-white/10 rounded-2xl text-slate-400 text-xs font-mono">
+            Belum ada project. Klik "TAMBAH" untuk membuat project baru.
+          </div>
+        )}
       </div>
 
-      {/* MODAL 1: ADD / EDIT PROJECT FORM (SUPPORTS FILE UPLOAD & URL) */}
-      <Modal isOpen={isFormModalOpen} onClose={() => setIsFormModalOpen(false)} maxWidth="max-w-2xl">
+      {/* MODAL 1: ADD & EDIT PROJECT FORM */}
+      <Modal
+        isOpen={isFormModalOpen}
+        onClose={() => setIsFormModalOpen(false)}
+        maxWidth="max-w-2xl"
+      >
         <div className="space-y-6">
-          <div>
-            <h2 className="text-2xl font-bold font-tech text-white uppercase tracking-tight">
+          <div className="border-b border-white/10 pb-4">
+            <h3 className="text-xl font-bold font-tech text-white uppercase tracking-tight">
               {editingId ? 'EDIT PROJECT' : 'TAMBAH PROJECT BARU'}
-            </h2>
-            <p className="text-slate-400 text-xs mt-1">
-              Unggah file gambar atau masukkan URL gambar banner project Anda.
-            </p>
+            </h3>
           </div>
 
           <form onSubmit={handleSubmitForm} className="space-y-5">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
-                Project Title
+                Judul Project
               </label>
               <input
                 type="text"
@@ -274,7 +275,7 @@ export default function Projects({ onShowMessage, onProjectsCountChange }) {
                 value={projectForm.title}
                 onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
                 className="w-full bg-black/80 border border-white/15 focus:border-white text-white px-4 py-3 rounded-xl outline-none text-sm"
-                placeholder="CYBER ARCADE 2099"
+                placeholder="Contoh: Ecommerce 3D Showcase"
               />
             </div>
 
@@ -350,18 +351,30 @@ export default function Projects({ onShowMessage, onProjectsCountChange }) {
               </div>
             </div>
 
-            <div className="pt-2 flex items-center justify-between border-t border-white/10">
-              <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={projectForm.featured}
-                  onChange={(e) => setProjectForm({ ...projectForm, featured: e.target.checked })}
-                  className="w-4 h-4 rounded border-white/20 accent-white"
-                />
-                <span>Featured on Homepage Showcase</span>
-              </label>
+            <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-white/10">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={projectForm.featured}
+                    onChange={(e) => setProjectForm({ ...projectForm, featured: e.target.checked })}
+                    className="w-4 h-4 rounded border-white/20 accent-white"
+                  />
+                  <span>Featured on Homepage</span>
+                </label>
 
-              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={projectForm.show_preview}
+                    onChange={(e) => setProjectForm({ ...projectForm, show_preview: e.target.checked })}
+                    className="w-4 h-4 rounded border-white/20 accent-white"
+                  />
+                  <span>Tampilkan Tombol Preview</span>
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2 self-end sm:self-auto">
                 <Button type="button" variant="danger" onClick={() => setIsFormModalOpen(false)} size="sm">
                   BATAL
                 </Button>

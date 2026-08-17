@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
 import Hero from './partials/Hero';
@@ -8,6 +8,7 @@ import HowIWork from './partials/HowIWork';
 import LetsTalkModal from './partials/LetsTalk';
 import AudioPlayer from './partials/AudioPlayer';
 import Preloader from '../preloader';
+import { getFeaturedProjects } from '../../api';
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -17,6 +18,9 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function HomePage({ isLoading, onPreloaderComplete, startAudio, onNavigateToLab }) {
   const [isContactOpen, setIsContactOpen] = useState(false);
+
+  // Inisialisasi API promise sekali untuk dipantau oleh Preloader
+  const apiPromises = useMemo(() => [getFeaturedProjects()], []);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -47,7 +51,13 @@ export default function HomePage({ isLoading, onPreloaderComplete, startAudio, o
   return (
     <div className="min-h-screen bg-black text-slate-100 selection:bg-white selection:text-black">
 
-      {isLoading && <Preloader onComplete={onPreloaderComplete} />}
+      {isLoading && (
+        <Preloader
+          onComplete={onPreloaderComplete}
+          apiPromises={apiPromises}
+        />
+      )}
+
 
       <AudioPlayer autoPlayTrigger={startAudio} />
 

@@ -129,18 +129,20 @@ export default function LabPage({ onBack }) {
                 <span className="text-[10px] font-mono tracking-widest text-white/40 uppercase">
                   Project · The Lab
                 </span>
-                <Button
-                  onClick={() => {
-                    const proj = selectedProject;
-                    setSelectedProject(null);
-                    setPreviewProject(proj);
-                  }}
-                  variant="primary"
-                  size="md"
-                  icon={ExternalLink}
-                >
-                  Preview
-                </Button>
+                {(selectedProject.show_preview ?? true) && (
+                  <Button
+                    onClick={() => {
+                      const proj = selectedProject;
+                      setSelectedProject(null);
+                      setPreviewProject(proj);
+                    }}
+                    variant="primary"
+                    size="md"
+                    icon={ExternalLink}
+                  >
+                    Preview
+                  </Button>
+                )}
               </div>
             </div>
           </div>

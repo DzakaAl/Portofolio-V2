@@ -76,9 +76,9 @@ export default function Hero({ onOpenContact }) {
         
         <div className="space-y-6 sm:space-y-8">
           
-          <h1 className="flex flex-col items-center justify-center select-none">
-            <div ref={line1Ref} className="leading-none">
-              <span className="font-heading font-black text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white/90 hover:text-white transition-colors duration-300 inline-block">
+          <h1 className="flex flex-col items-center justify-center select-none w-full max-w-full">
+            <div ref={line1Ref} className="leading-none text-center">
+              <span className="font-heading font-black text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tight text-white/90 hover:text-white transition-colors duration-300 inline-block whitespace-nowrap">
                 {text1.split('').map((char, index) => (
                   <span
                     key={index}
@@ -90,8 +90,8 @@ export default function Hero({ onOpenContact }) {
               </span>
             </div>
 
-            <div ref={line2Ref} className="leading-none mt-2 sm:mt-4">
-              <span className="font-heading font-black text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white text-glow-white uppercase inline-block">
+            <div ref={line2Ref} className="leading-none mt-2 sm:mt-4 text-center">
+              <span className="font-heading font-black text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tight text-white text-glow-white uppercase inline-block whitespace-nowrap">
                 {text2.split('').map((char, index) => (
                   <span
                     key={index}

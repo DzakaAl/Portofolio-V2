@@ -196,17 +196,19 @@ export default function ProjectShowcase({ onNavigateToProjects, onOpenContact })
                     ))}
                   </div>
 
-                  {/* Premium Preview Button */}
-                  <div className="pt-2">
-                    <Button
-                      onClick={() => setPreviewProject(project)}
-                      variant="primary"
-                      size="lg"
-                      icon={ExternalLink}
-                    >
-                      Preview Project
-                    </Button>
-                  </div>
+                  {/* Premium Preview Button (Rendered conditionally if show_preview is true or undefined) */}
+                  {(project.show_preview ?? true) && (
+                    <div className="pt-2">
+                      <Button
+                        onClick={() => setPreviewProject(project)}
+                        variant="primary"
+                        size="lg"
+                        icon={ExternalLink}
+                      >
+                        Preview Project
+                      </Button>
+                    </div>
+                  )}
                 </div>
               );
             })}

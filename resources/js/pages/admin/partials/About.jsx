@@ -51,19 +51,6 @@ export default function About({ onShowMessage }) {
 
       <form onSubmit={handleUpdateAbout} className="space-y-4 sm:space-y-6">
         <div>
-          <label className="block text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-            Judul Section (Tidak Dapat Diubah)
-          </label>
-          <input
-            type="text"
-            value={aboutForm.title}
-            readOnly
-            disabled
-            className="w-full bg-white/5 border border-white/10 text-slate-400 px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl outline-none text-xs sm:text-sm font-tech cursor-not-allowed select-none"
-          />
-        </div>
-
-        <div>
           <label className="block text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
             Deskripsi Lengkap / Bio
           </label>
