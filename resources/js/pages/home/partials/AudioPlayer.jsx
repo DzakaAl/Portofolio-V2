@@ -23,17 +23,30 @@ export default function AudioPlayer({ autoPlayTrigger }) {
   // Trigger audio playback seamlessly upon user click/enter interaction on Preloader
   useEffect(() => {
     if (autoPlayTrigger && audioRef.current) {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise
+      const startPlay = () => {
+        if (!audioRef.current) return;
+        audioRef.current
+          .play()
           .then(() => {
             setIsPlaying(true);
+            window.removeEventListener('click', startPlay);
+            window.removeEventListener('keydown', startPlay);
           })
           .catch((err) => {
-            console.log('Audio autoplay prevented by browser:', err);
-            setIsPlaying(false);
+            console.log('Audio playback waiting for gesture:', err);
           });
-      }
+      };
+
+      startPlay();
+
+      // Fallback: Jika browser menunda audio karena butuh gesture pengguna, putar audio pada sentuhan/klik pertama
+      window.addEventListener('click', startPlay, { once: true });
+      window.addEventListener('keydown', startPlay, { once: true });
+
+      return () => {
+        window.removeEventListener('click', startPlay);
+        window.removeEventListener('keydown', startPlay);
+      };
     }
   }, [autoPlayTrigger]);
 

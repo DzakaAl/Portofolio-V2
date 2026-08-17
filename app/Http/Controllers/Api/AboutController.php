@@ -24,7 +24,14 @@ class AboutController extends Controller
             'image_url' => 'nullable|string',
         ]);
 
-        $about = About::firstOrCreate(['id' => 1], ['title' => 'ABOUT ME']);
+        $about = About::firstOrCreate(
+            ['id' => 1],
+            [
+                'title' => 'ABOUT ME',
+                'description' => $request->input('description', ''),
+                'image_url' => $request->input('image_url', null),
+            ]
+        );
         $about->update([
             'description' => $request->input('description'),
             'image_url' => $request->input('image_url', $about->image_url),

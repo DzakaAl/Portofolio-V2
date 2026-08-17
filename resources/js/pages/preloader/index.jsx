@@ -188,7 +188,7 @@ export default function Preloader({ onComplete, apiPromises = [] }) {
       ref={containerRef}
       onClick={handleProceed}
       className={`fixed inset-0 z-[100] bg-black flex flex-col justify-between p-8 sm:p-14 select-none ${
-        isReady ? 'cursor-pointer' : 'cursor-wait'
+        isReady ? 'cursor-pointer' : 'cursor-default'
       }`}
     >
       <div className="flex flex-col items-center justify-center space-y-6 my-auto">

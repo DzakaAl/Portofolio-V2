@@ -8,7 +8,7 @@ import HowIWork from './partials/HowIWork';
 import LetsTalkModal from './partials/LetsTalk';
 import AudioPlayer from './partials/AudioPlayer';
 import Preloader from '../preloader';
-import { getFeaturedProjects } from '../../api';
+import { getFeaturedProjects, getAbout, getTechStacks, getMessages } from '../../api';
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -19,8 +19,16 @@ gsap.registerPlugin(ScrollTrigger);
 export default function HomePage({ isLoading, onPreloaderComplete, startAudio, onNavigateToLab }) {
   const [isContactOpen, setIsContactOpen] = useState(false);
 
-  // Inisialisasi API promise sekali untuk dipantau oleh Preloader
-  const apiPromises = useMemo(() => [getFeaturedProjects()], []);
+  // Inisialisasi seluruh API Promises database untuk dipantau dan ditunggu oleh Preloader
+  const apiPromises = useMemo(
+    () => [
+      getFeaturedProjects(),
+      getAbout(),
+      getTechStacks(),
+      getMessages(),
+    ],
+    []
+  );
 
   useEffect(() => {
     const lenis = new Lenis({

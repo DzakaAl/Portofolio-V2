@@ -18,7 +18,11 @@ export default function LetsTalk({ isOpen, onClose }) {
   const [loginForm, setLoginForm] = useState({ name: '', email: '' });
   const chatEndRef = useRef(null);
 
-  // Fetch messages from database via API
+  // Fetch messages secepatnya saat komponen terpasang / ketika modal terbuka
+  useEffect(() => {
+    fetchChatMessages();
+  }, []);
+
   useEffect(() => {
     if (isOpen && activeTab === 'livechat') {
       fetchChatMessages();
@@ -27,7 +31,9 @@ export default function LetsTalk({ isOpen, onClose }) {
 
   const fetchChatMessages = async () => {
     const data = await getMessages();
-    setMessages(data);
+    if (data && Array.isArray(data)) {
+      setMessages(data);
+    }
   };
 
   // Auto scroll live chat to bottom
@@ -56,9 +62,28 @@ export default function LetsTalk({ isOpen, onClose }) {
   };
 
   // Google OAuth Official Account Login Handler
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = (customData = null) => {
+    // Jika data dari modal manual dikirimkan (Fallback)
+    if (customData && customData.name && customData.email) {
+      const initialsAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(customData.name)}&background=2563EB&color=fff&bold=true`;
+      const avatarUrl = customData.avatar?.trim() ? customData.avatar.trim() : initialsAvatar;
+
+      const loggedUser = {
+        name: customData.name,
+        email: customData.email,
+        avatar: avatarUrl,
+        id: Date.now().toString(),
+      };
+      setUser(loggedUser);
+      localStorage.setItem('google_chat_user', JSON.stringify(loggedUser));
+      setShowLoginModal(false);
+      setLoginForm({ name: '', email: '', avatar: '' });
+      return;
+    }
+
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
+    // Jika SDK Google OAuth siap dan Client ID ada di .env
     if (window.google?.accounts?.id && googleClientId) {
       window.google.accounts.id.initialize({
         client_id: googleClientId,
@@ -74,14 +99,22 @@ export default function LetsTalk({ isOpen, onClose }) {
               };
               setUser(googleUser);
               localStorage.setItem('google_chat_user', JSON.stringify(googleUser));
+              setShowLoginModal(false);
             }
           }
         },
       });
-      window.google.accounts.id.prompt();
-    } else {
-      alert('VITE_GOOGLE_CLIENT_ID belum diatur di file .env');
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          // Buka modal login jika Google One Tap diblokir browser
+          setShowLoginModal(true);
+        }
+      });
+      return;
     }
+
+    // Jika Client ID di hosting belum diisi atau GIS diblokir, buka modal profil
+    setShowLoginModal(true);
   };
 
   const handleGoogleLogout = () => {
