@@ -55,28 +55,10 @@ export default function LetsTalk({ isOpen, onClose }) {
     }
   };
 
-  // Google OAuth / Account Login Handler
-  const handleGoogleLogin = (customData = null) => {
-    // If manual modal data submitted
-    if (customData && customData.name && customData.email) {
-      const initialsAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(customData.name)}&background=0D8ABC&color=fff&bold=true`;
-      const avatarUrl = customData.avatar?.trim() ? customData.avatar.trim() : initialsAvatar;
-
-      const loggedUser = {
-        name: customData.name,
-        email: customData.email,
-        avatar: avatarUrl,
-        id: Date.now().toString(),
-      };
-      setUser(loggedUser);
-      localStorage.setItem('google_chat_user', JSON.stringify(loggedUser));
-      setShowLoginModal(false);
-      setLoginForm({ name: '', email: '', avatar: '' });
-      return;
-    }
-
-    // Try Google Identity OAuth (GIS) if Client ID configured or SDK ready
+  // Google OAuth Official Account Login Handler
+  const handleGoogleLogin = () => {
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
     if (window.google?.accounts?.id && googleClientId) {
       window.google.accounts.id.initialize({
         client_id: googleClientId,
@@ -96,12 +78,10 @@ export default function LetsTalk({ isOpen, onClose }) {
           }
         },
       });
-      window.google.accounts.id.prompt(); // Show Google OAuth One Tap Prompt
-      return;
+      window.google.accounts.id.prompt();
+    } else {
+      alert('VITE_GOOGLE_CLIENT_ID belum diatur di file .env');
     }
-
-    // Fallback modal prompt
-    setShowLoginModal(true);
   };
 
   const handleGoogleLogout = () => {
@@ -193,51 +173,78 @@ export default function LetsTalk({ isOpen, onClose }) {
             onTouchMove={(e) => e.stopPropagation()}
             className="h-72 sm:h-80 overflow-y-auto space-y-4 pr-2 overscroll-contain touch-auto select-text border border-white/5 rounded-2xl p-3 bg-black/40"
           >
-            {messages.map((msg) => (
-              <div key={msg.id} className="flex items-start gap-3">
-                <img
-                  src={msg.avatar || Img}
-                  alt={msg.user}
-                  className="w-8 h-8 rounded-full border border-white/10 shrink-0 mt-0.5 object-cover bg-zinc-800"
-                />
-                <div className="flex-1 bg-white/[0.03] border border-white/10 rounded-2xl p-3">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-xs font-bold text-slate-200">{msg.user}</span>
-                    <span className="text-[10px] font-mono text-white/40">{msg.time}</span>
+            {messages.map((msg) => {
+              const isOwner = msg.email?.toLowerCase() === 'dzakaal10@gmail.com';
+              return (
+                <div
+                  key={msg.id}
+                  className={`flex items-start gap-3 ${isOwner ? 'flex-row-reverse text-right' : ''}`}
+                >
+                  <img
+                    src={msg.avatar || Img}
+                    alt={msg.user}
+                    className="w-8 h-8 rounded-full border border-white/10 shrink-0 mt-0.5 object-cover bg-zinc-800"
+                  />
+
+                  <div
+                    className={`flex-1 border rounded-2xl p-3 sm:p-3.5 transition-all ${
+                      isOwner
+                        ? 'bg-blue-500/10 border-blue-500/25 text-slate-100'
+                        : 'bg-white/[0.03] border-white/10 text-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className={`text-xs font-body font-bold 'text-slate-200'}`}>
+                        {msg.user}
+                      </span>
+                      <span className="text-[10px] font-mono text-white/40">
+                        {msg.time}
+                      </span>
+                    </div>
+
+                    <p className="text-xs font-tech text-slate-300 leading-relaxed text-left">
+                      {msg.text}
+                    </p>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed select-text">{msg.text}</p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <div ref={chatEndRef} />
           </div>
 
           {/* Chat Input or Google Login Prompt */}
           {user ? (
-            <form onSubmit={handleSendChatMessage} className="flex items-center gap-2">
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Ketik pesan publik..."
-                className="flex-1 bg-black/60 border border-white/15 focus:border-white text-white px-4 py-3 rounded-2xl text-xs outline-none transition-all"
-              />
+            <form onSubmit={handleSendChatMessage} className="flex items-center gap-2 pt-1">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Ketik pesan publik..."
+                  className="w-full bg-white/[0.03] border border-white/10 focus:border-white/40 focus:bg-white/[0.06] text-white px-4 py-3 rounded-2xl text-xs outline-none transition-all duration-200 placeholder:text-white/30"
+                />
+              </div>
               <button
                 type="submit"
                 disabled={!chatInput.trim() || loadingMsg}
-                className="bg-white text-black p-3 rounded-2xl hover:bg-slate-200 disabled:opacity-40 cursor-pointer transition-all"
+                className="bg-white text-black p-3.5 rounded-2xl hover:bg-slate-200 active:scale-95 disabled:opacity-30 disabled:hover:bg-white cursor-pointer transition-all duration-200 shrink-0 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
               >
                 <Send className="w-4 h-4" />
               </button>
             </form>
           ) : (
-            <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-5 text-center space-y-3">
-              <p className="text-xs text-slate-300">Masuk dengan Akun Google untuk bergabung dalam diskusi Live Chat.</p>
+            <div className="relative overflow-hidden bg-gradient-to-br from-white/[0.05] via-white/[0.02] to-transparent border border-white/10 rounded-2xl p-5 text-center space-y-3.5 backdrop-blur-md">
+              <div className="space-y-1">
+                <p className="text-[11px] font-tech text-white/50">
+                  Sign in dengan akun Google Anda untuk mulai mengirim pesan publik.
+                </p>
+              </div>
+
               <button
                 onClick={() => handleGoogleLogin()}
-                className="inline-flex items-center justify-center gap-3 bg-white text-black font-bold text-xs px-6 py-3 rounded-2xl hover:bg-slate-200 transition-all cursor-pointer shadow-lg shadow-white/10"
+                className="inline-flex items-center justify-center gap-3 bg-white text-black font-extrabold font-body text-xs px-6 py-3 rounded-xl hover:bg-slate-200 active:scale-95 transition-all duration-200 cursor-pointer shadow-[0_4px_20px_rgba(255,255,255,0.15)] group"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
                     d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
@@ -255,37 +262,37 @@ export default function LetsTalk({ isOpen, onClose }) {
                     d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.7 1.29 6.58l3.99 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
                   />
                 </svg>
-                Sign in with Google
+                <span>SIGN IN WITH GOOGLE</span>
               </button>
             </div>
           )}
         </div>
       )}
 
-      {/* TAB 2: LET'S CONNECT (EMAIL FORM) */}
+      {/* TAB 2: LET'S CONNECT (DIRECT GMAIL FORM) */}
       {activeTab === 'connect' && (
-        <form onSubmit={(e) => { e.preventDefault(); alert('Pesan berhasil terkirim!'); onClose(); }} className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const subjectVal = e.target.subject.value;
+            const messageVal = e.target.message.value;
+            
+            // Buka Gmail Web langsung tanpa mailto:
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=dzakaal10@gmail.com&su=${encodeURIComponent(subjectVal)}&body=${encodeURIComponent(messageVal)}`;
+            window.open(gmailUrl, '_blank');
+          }}
+          className="space-y-4"
+        >
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-              Your Name
+              Subject
             </label>
             <input
               type="text"
+              name="subject"
               required
-              placeholder="John Doe"
-              className="w-full bg-black/60 border border-white/10 focus:border-white text-white px-4 py-3 rounded-2xl text-xs outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-              Your Email
-            </label>
-            <input
-              type="email"
-              required
-              placeholder="john@example.com"
-              className="w-full bg-black/60 border border-white/10 focus:border-white text-white px-4 py-3 rounded-2xl text-xs outline-none"
+              placeholder="Diskusi Project / Tawaran Kolaborasi..."
+              className="w-full bg-black/60 border border-white/10 focus:border-white text-white px-4 py-3 rounded-2xl text-xs outline-none transition-all"
             />
           </div>
 
@@ -294,106 +301,20 @@ export default function LetsTalk({ isOpen, onClose }) {
               Message
             </label>
             <textarea
-              rows={4}
+              name="message"
+              rows={5}
               required
-              placeholder="Ceritakan proyek atau ide Anda..."
-              className="w-full bg-black/60 border border-white/10 focus:border-white text-white px-4 py-3 rounded-2xl text-xs outline-none"
+              placeholder="Tuliskan pesan atau detail proyek Anda di sini..."
+              className="w-full bg-black/60 border border-white/10 focus:border-white text-white px-4 py-3 rounded-2xl text-xs outline-none transition-all resize-none"
             />
           </div>
 
           <div className="pt-2">
-            <Button type="submit" variant="primary" icon={Mail} className="w-full justify-center">
-              SEND DIRECT MESSAGE
+            <Button type="submit" variant="primary" icon={Send} className="w-full justify-center">
+              SEND EMAIL
             </Button>
           </div>
         </form>
-      )}
-
-      {/* MODAL GOOGLE ACCOUNT LOGIN */}
-      {showLoginModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-[#0a0a0a] border border-white/15 rounded-3xl p-6 sm:p-8 max-w-sm w-full space-y-5 shadow-2xl relative">
-            <div className="text-center space-y-2">
-              <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z" />
-                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.29v3.15C3.26 21.3 7.33 24 12 24z" />
-                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.29c-.8 1.6-1.29 3.39-1.29 5.42s.49 3.82 1.29 5.42l3.99-3.15z" />
-                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.7 1.29 6.58l3.99 3.15c.95-2.83 3.6-4.98 6.72-4.98z" />
-                </svg>
-              </div>
-              <h3 className="font-tech text-lg font-bold text-white uppercase tracking-wide">
-                Masuk Akun Google
-              </h3>
-              <p className="font-mono text-xs text-slate-400">
-                Masukkan detail nama dan akun email Anda untuk mulai mengobrol.
-              </p>
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleGoogleLogin(loginForm);
-              }}
-              className="space-y-4"
-            >
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  Nama Lengkap
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={loginForm.name}
-                  onChange={(e) => setLoginForm({ ...loginForm, name: e.target.value })}
-                  placeholder="Contoh: Dzaka"
-                  className="w-full bg-black border border-white/20 focus:border-white text-white px-4 py-3 rounded-xl text-xs outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  Alamat Email Google
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={loginForm.email}
-                  onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-                  placeholder="user@gmail.com"
-                  className="w-full bg-black border border-white/20 focus:border-white text-white px-4 py-3 rounded-xl text-xs outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                  URL Foto Profil Google (Opsional)
-                </label>
-                <input
-                  type="url"
-                  value={loginForm.avatar || ''}
-                  onChange={(e) => setLoginForm({ ...loginForm, avatar: e.target.value })}
-                  placeholder="https://lh3.googleusercontent.com/..."
-                  className="w-full bg-black border border-white/20 focus:border-white text-white px-4 py-3 rounded-xl text-xs outline-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowLoginModal(false)}
-                >
-                  BATAL
-                </Button>
-                <Button type="submit" variant="primary" size="sm">
-                  MASUK CHAT
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
       )}
     </Modal>
   );

@@ -14,13 +14,38 @@ export default function Preloader({ onComplete, apiPromises = [] }) {
 
   useEffect(() => {
     let isMounted = true;
+    let targetProgress = 0;
+    let currentProgress = 0;
+
+    // Smooth counter animation loop (0 ke 100 tanpa lompat)
+    const interval = setInterval(() => {
+      if (!isMounted) return;
+      if (currentProgress < targetProgress) {
+        currentProgress += 1;
+        setProgress(currentProgress);
+
+        // Update teks deskripsi status sesuai persentase & aset yang dimuat
+        if (currentProgress < 25) {
+          setStatusText('CONNECTING TO SERVER & API...');
+        } else if (currentProgress < 50) {
+          setStatusText('LOADING UI IMAGES & GRAPHICS...');
+        } else if (currentProgress < 75) {
+          setStatusText('LOADING AUDIO & SPIDERMAN MEDIA...');
+        } else if (currentProgress < 100) {
+          setStatusText('SYNCHRONIZING INTERFACE & FONTS...');
+        } else {
+          setStatusText('PRESS ENTER OR CLICK TO CONTINUE');
+          setIsReady(true);
+        }
+      }
+    }, 25);
 
     // Helper untuk membungkus gambar menjadi Promise
     const loadImage = (src) => {
       return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => resolve(src);
-        img.onerror = () => resolve(src); // Graceful fallback
+        img.onerror = () => resolve(src);
         img.src = src;
       });
     };
@@ -49,10 +74,7 @@ export default function Preloader({ onComplete, apiPromises = [] }) {
     };
 
     const startPreloading = async () => {
-      // 1. Ambil semua gambar di DOM
       const domImages = Array.from(document.images).map((img) => img.src).filter(Boolean);
-      
-      // 2. Ambil background-image CSS
       const bgImages = Array.from(document.querySelectorAll('*'))
         .map((el) => window.getComputedStyle(el).backgroundImage)
         .filter((bg) => bg && bg !== 'none' && bg.startsWith('url('))
@@ -60,7 +82,6 @@ export default function Preloader({ onComplete, apiPromises = [] }) {
 
       const uniqueImageUrls = Array.from(new Set([...domImages, ...bgImages]));
 
-      // 3. Buat array Promise untuk semua tipe asset
       const imagePromises = uniqueImageUrls.map(loadImage);
       const videoPromises = Array.from(document.querySelectorAll('video')).map(loadVideo);
       const audioElements = Array.from(document.querySelectorAll('audio'));
@@ -79,38 +100,28 @@ export default function Preloader({ onComplete, apiPromises = [] }) {
       ];
 
       const totalItems = Math.max(allAssetPromises.length, 1);
-
       let completedItems = 0;
 
-      // Wrapper untuk memperbarui progress secara real-time saat tiap Promise selesai
       const trackSinglePromise = (promise) => {
         return promise
           .then((res) => {
             if (isMounted) {
               completedItems += 1;
-              const currentPercent = Math.min(Math.round((completedItems / totalItems) * 100), 100);
-              setProgress((prev) => Math.max(prev, currentPercent));
-
-              if (currentPercent < 40) setStatusText('LOADING IMAGES & MEDIA...');
-              else if (currentPercent < 80) setStatusText('PRELOADING FONTS & STYLES...');
-              else if (currentPercent < 100) setStatusText('INITIALIZING INTERFACE...');
+              targetProgress = Math.min(Math.round((completedItems / totalItems) * 100), 100);
             }
             return res;
           })
           .catch((err) => {
             if (isMounted) {
               completedItems += 1;
-              const currentPercent = Math.min(Math.round((completedItems / totalItems) * 100), 100);
-              setProgress((prev) => Math.max(prev, currentPercent));
+              targetProgress = Math.min(Math.round((completedItems / totalItems) * 100), 100);
             }
             return err;
           });
       };
 
       const trackedPromises = allAssetPromises.map(trackSinglePromise);
-
-      // Timeout pengaman agar preloader tidak stuck jika ada asset yang heng
-      const safetyTimeout = new Promise((resolve) => setTimeout(resolve, 8000));
+      const safetyTimeout = new Promise((resolve) => setTimeout(resolve, 5000));
 
       await Promise.race([
         Promise.allSettled(trackedPromises),
@@ -118,9 +129,7 @@ export default function Preloader({ onComplete, apiPromises = [] }) {
       ]);
 
       if (isMounted) {
-        setProgress(100);
-        setStatusText('PRESS ENTER OR CLICK TO CONTINUE');
-        setIsReady(true);
+        targetProgress = 100;
       }
     };
 
@@ -144,6 +153,7 @@ export default function Preloader({ onComplete, apiPromises = [] }) {
 
     return () => {
       isMounted = false;
+      clearInterval(interval);
       ctx.revert();
     };
   }, []);
@@ -151,15 +161,15 @@ export default function Preloader({ onComplete, apiPromises = [] }) {
   const handleProceed = () => {
     if (!isReady) return;
 
+    // Panggil callback complete secepatnya agar audio dan video langsung dipicu
+    if (onComplete) onComplete();
+
     gsap.to(containerRef.current, {
       opacity: 0,
       scale: 1.04,
       filter: 'blur(12px)',
       duration: 0.8,
       ease: 'power3.inOut',
-      onComplete: () => {
-        onComplete && onComplete();
-      },
     });
   };
 

@@ -27,6 +27,14 @@ class MessageController extends Controller
             'time' => 'nullable|string',
         ]);
 
+        // Jika avatar diisi, perbarui avatar pesan-pesan lama dengan email yang sama
+        if ($request->filled('avatar')) {
+            Message::where('email', $request->email)->update([
+                'avatar' => $request->avatar,
+                'user' => $request->user,
+            ]);
+        }
+
         $msg = Message::create([
             'user' => $request->user,
             'email' => $request->email,

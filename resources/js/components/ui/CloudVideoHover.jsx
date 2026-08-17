@@ -1,16 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import spidermanVideo from '../../assets/spiderman.webm';
 
-export default function CloudVideoHover({ isHovered }) {
+export default function CloudVideoHover({ isHovered, isLoading }) {
   const canvasRef = useRef(null);
   const videoRef = useRef(null);
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const isHoveredRef = useRef(isHovered);
 
-  // Keep ref updated without re-triggering effect
+  // Keep ref updated without re-triggering effect, ignore hover when loading
   useEffect(() => {
-    isHoveredRef.current = isHovered;
-  }, [isHovered]);
+    isHoveredRef.current = isLoading ? false : isHovered;
+  }, [isHovered, isLoading]);
 
   useEffect(() => {
     const handleMouseMove = (e) => {

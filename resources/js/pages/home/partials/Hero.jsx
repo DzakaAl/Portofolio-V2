@@ -4,7 +4,7 @@ import CloudVideoHover from '../../../components/ui/CloudVideoHover';
 import Button from '../../../components/ui/Button';
 import { gsap } from 'gsap';
 
-export default function Hero({ onOpenContact }) {
+export default function Hero({ onOpenContact, isLoading }) {
   const heroRef = useRef(null);
   const line1Ref = useRef(null);
   const line2Ref = useRef(null);
@@ -51,7 +51,7 @@ export default function Hero({ onOpenContact }) {
   }, []);
 
   const handleMouseMove = (e) => {
-    if (!heroRef.current) return;
+    if (!heroRef.current || isLoading) return;
     const rect = heroRef.current.getBoundingClientRect();
     setMousePos({
       x: e.clientX - rect.left,
@@ -64,13 +64,13 @@ export default function Hero({ onOpenContact }) {
       ref={heroRef}
       id="hero"
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={() => !isLoading && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden select-none cursor-pointer"
     >
       <LiveWallpaper />
 
-      <CloudVideoHover isHovered={isHovered} mousePos={mousePos} />
+      <CloudVideoHover isHovered={isHovered} isLoading={isLoading} mousePos={mousePos} />
 
       <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-24 pb-16 pointer-events-none">
         

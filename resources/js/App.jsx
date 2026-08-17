@@ -19,8 +19,12 @@ export default function App() {
     return 'home';
   });
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [startAudio, setStartAudio] = useState(false);
+  const [isLoading, setIsLoading] = useState(() => {
+    return !sessionStorage.getItem('has_preloaded');
+  });
+  const [startAudio, setStartAudio] = useState(() => {
+    return !!sessionStorage.getItem('has_preloaded');
+  });
 
   useEffect(() => {
     const handlePopState = () => {
@@ -77,6 +81,7 @@ export default function App() {
         <HomePage
           isLoading={isLoading}
           onPreloaderComplete={() => {
+            sessionStorage.setItem('has_preloaded', 'true');
             setIsLoading(false);
             setStartAudio(true);
           }}
