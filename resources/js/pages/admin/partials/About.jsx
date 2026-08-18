@@ -6,7 +6,6 @@ import { getAbout, updateAbout } from '../../../api';
 export default function About({ onShowMessage }) {
   const [loading, setLoading] = useState(false);
   const [aboutForm, setAboutForm] = useState({
-    title: '',
     description: '',
     image_url: '',
   });
@@ -19,9 +18,8 @@ export default function About({ onShowMessage }) {
     const data = await getAbout();
     if (data) {
       setAboutForm({
-        title: data.title || 'ABOUT ME',
-        description: data.description || '',
-        image_url: data.image_url || '',
+        description: data?.description || '',
+        image_url: data?.image_url || '',
       });
     }
   };

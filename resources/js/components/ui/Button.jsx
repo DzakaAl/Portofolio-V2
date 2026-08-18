@@ -18,7 +18,7 @@ export default function Button({
   iconPosition = 'right',
   ...props
 }) {
-  const baseStyles = 'inline-flex items-center justify-center font-bold transition-all duration-300 select-none cursor-pointer disabled:opacity-50 disabled:pointer-events-none';
+  const baseStyles = 'inline-flex items-center justify-center font-bold transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:pointer-events-none';
 
   const variantStyles = {
     primary:

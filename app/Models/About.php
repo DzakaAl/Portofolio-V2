@@ -10,7 +10,6 @@ class About extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
         'description',
         'image_url',
     ];

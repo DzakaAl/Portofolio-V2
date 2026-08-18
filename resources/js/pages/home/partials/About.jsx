@@ -13,7 +13,7 @@ export default function About() {
 
   const [aboutData, setAboutData] = useState({
     title: 'ABOUT ME',
-    description: 'I am a Lead Creative Technologist & Full-Stack Architect with over 8 years of experience building high-impact digital solutions, scalable web systems, and modern interactive user experiences.',
+    description: '',
     image_url: null,
   });
 
@@ -116,7 +116,7 @@ export default function About() {
       <div className="w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-center z-10 my-auto py-8">
         <div className="lg:col-span-7 space-y-6">
           <h2 ref={titleRef} className="text-4xl sm:text-5xl lg:text-6xl font-bold font-tech text-white tracking-tight mb-6 uppercase">
-            {aboutData.title || 'ABOUT ME'}
+            ABOUT ME
           </h2>
 
           <div ref={textRef} className="text-slate-300 text-base sm:text-lg lg:text-xl leading-relaxed text-left font-normal">

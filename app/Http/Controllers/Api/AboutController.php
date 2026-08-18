@@ -27,7 +27,6 @@ class AboutController extends Controller
         $about = About::firstOrCreate(
             ['id' => 1],
             [
-                'title' => 'ABOUT ME',
                 'description' => $request->input('description', ''),
                 'image_url' => $request->input('image_url', null),
             ]

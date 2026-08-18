@@ -17,11 +17,13 @@ class Project extends Model
         'image',
         'link',
         'featured',
+        'show_preview',
         'order',
     ];
 
     protected $casts = [
         'tags' => 'array',
         'featured' => 'boolean',
+        'show_preview' => 'boolean',
     ];
 }

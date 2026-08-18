@@ -49,7 +49,7 @@ export default function LoginPage({ onLoginSuccess }) {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="min-h-screen bg-black text-slate-100 font-tech flex flex-col justify-center items-center px-4 relative overflow-hidden select-none"
+      className="min-h-screen bg-black text-slate-100 font-tech flex flex-col justify-center items-center px-4 relative overflow-hidden"
     >
       {/* 1. Live Wallpaper Shader Canvas Background */}
       <LiveWallpaper />

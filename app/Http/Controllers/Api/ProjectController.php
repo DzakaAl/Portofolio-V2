@@ -36,6 +36,7 @@ class ProjectController extends Controller
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:5120',
             'link' => 'nullable|string',
             'featured' => 'nullable',
+            'show_preview' => 'nullable',
             'order' => 'nullable|integer',
         ]);
 
@@ -61,6 +62,7 @@ class ProjectController extends Controller
             'image' => $imageUrl ?: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80',
             'link' => $request->link,
             'featured' => filter_var($request->featured, FILTER_VALIDATE_BOOLEAN),
+            'show_preview' => filter_var($request->input('show_preview', true), FILTER_VALIDATE_BOOLEAN),
             'order' => $request->input('order', 0),
         ]);
 
@@ -83,6 +85,7 @@ class ProjectController extends Controller
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:5120',
             'link' => 'nullable|string',
             'featured' => 'nullable',
+            'show_preview' => 'nullable',
             'order' => 'nullable|integer',
         ]);
 
@@ -90,6 +93,10 @@ class ProjectController extends Controller
 
         if ($request->has('featured')) {
             $data['featured'] = filter_var($request->featured, FILTER_VALIDATE_BOOLEAN);
+        }
+
+        if ($request->has('show_preview')) {
+            $data['show_preview'] = filter_var($request->show_preview, FILTER_VALIDATE_BOOLEAN);
         }
 
         if ($request->has('tags')) {
