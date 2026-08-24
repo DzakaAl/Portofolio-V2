@@ -1,0 +1,15 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+▲ Next.js 16.3.2 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.16.0.2:3000
+- Environments: .env.development
+✓ Ready in 1128ms
+✓ Running next.config.ts took 69ms
+
+ GET / 200 in 553ms (next.js: 297ms, application-code: 256ms)
+ GET /lab/ 200 in 116ms (next.js: 49ms, application-code: 66ms)
+ GET /login/ 200 in 471ms (next.js: 384ms, application-code: 87ms)
+ GET /admin/ 200 in 103ms (next.js: 46ms, application-code: 57ms)

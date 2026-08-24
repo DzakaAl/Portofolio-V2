@@ -1,28 +1,12 @@
-/node_modules
-/dist
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/storage/app/public/projects/*
-!/storage/app/public/.gitignore
-/storage/framework/cache/*
-/storage/framework/sessions/*
-/storage/framework/testing/*
-/storage/framework/views/*
-/storage/logs/*
-/vendor
-.env
-.env.dev
-.env.prod
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log
+# ===== Monorepo Root =====
+# Rule spesifik ada di backend/.gitignore (Laravel) dan frontend/.gitignore (Next.js)
+
+# OS junk
 .DS_Store
 Thumbs.db
-/.vscode
-/.idea
-/.codex
-/.cursor
+desktop.ini
+
+# Editor (global)
+.vscode/
+.idea/
+*.swp
