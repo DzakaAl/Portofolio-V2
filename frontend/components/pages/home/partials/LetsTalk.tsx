@@ -8,6 +8,60 @@ import type { ChatMessage } from '@/lib/types';
 
 const Img = '/assets/portrait1.webp';
 
+const WHATSAPP_NUMBER = '6285181681725';
+
+// ── WhatsApp inquiry categories: each type gets its own professional intro line ──
+const INQUIRY_CATEGORIES = [
+  {
+    value: 'project',
+    label: '💼 Project / Freelance',
+    intro: 'I have a project in mind and would love to discuss how we can work together.',
+  },
+  {
+    value: 'job',
+    label: '🧑‍💼 Job Opportunity',
+    intro: "I'm reaching out regarding a job opportunity that could be a great fit for both of us.",
+  },
+  {
+    value: 'collaboration',
+    label: '🤝 Collaboration',
+    intro: "I'd love to explore a potential collaboration with you.",
+  },
+  {
+    value: 'other',
+    label: '💬 General / Other',
+    intro: "I'd like to get in touch and connect with you.",
+  },
+] as const;
+
+type InquiryCategory = (typeof INQUIRY_CATEGORIES)[number]['value'];
+
+// Builds a clean, professional WhatsApp message from the "Let's Connect" form
+function buildWhatsAppMessage(
+  category: InquiryCategory,
+  name: string,
+  subject: string,
+  message: string
+): string {
+  const categoryMeta = INQUIRY_CATEGORIES.find((c) => c.value === category) ?? INQUIRY_CATEGORIES[3];
+
+  return [
+    'Hi Dzaka! 👋',
+    '',
+    categoryMeta.intro,
+    '',
+    '────────────────────',
+    `📌 *Subject:* ${subject}`,
+    `👤 *From:* ${name}`,
+    `🏷️ *Type:* ${categoryMeta.label}`,
+    '────────────────────',
+    '',
+    message,
+    '',
+    '✉️ _Sent via the "Let\'s Connect" form on your portfolio website_',
+  ].join('\n');
+}
+
 interface ChatUser {
   name: string;
   email: string;
@@ -341,20 +395,56 @@ export default function LetsTalk({ isOpen, onClose }: { isOpen: boolean; onClose
         </div>
       )}
 
-      {/* TAB 2: LET'S CONNECT (DIRECT GMAIL FORM) */}
+      {/* TAB 2: LET'S CONNECT (DIRECT WHATSAPP) */}
       {activeTab === 'connect' && (
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            const subjectVal = e.target.subject.value;
-            const messageVal = e.target.message.value;
-            
-            // Buka Gmail Web langsung tanpa mailto:
-            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=dzakaal10@gmail.com&su=${encodeURIComponent(subjectVal)}&body=${encodeURIComponent(messageVal)}`;
-            window.open(gmailUrl, '_blank');
+            const categoryVal = e.target.category.value as InquiryCategory;
+            const nameVal = e.target.senderName.value.trim();
+            const subjectVal = e.target.subject.value.trim();
+            const messageVal = e.target.message.value.trim();
+
+            // Buka WhatsApp chat dengan template pesan profesional
+            const waMessage = buildWhatsAppMessage(categoryVal, nameVal, subjectVal, messageVal);
+            const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMessage)}`;
+            window.open(waUrl, '_blank');
           }}
           className="space-y-4"
         >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                Your Name
+              </label>
+              <input
+                type="text"
+                name="senderName"
+                required
+                placeholder="Nama Anda..."
+                className="w-full bg-black/60 border border-white/10 focus:border-white text-white px-4 py-3 rounded-2xl text-xs outline-none transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                Inquiry Type
+              </label>
+              <select
+                name="category"
+                required
+                defaultValue="project"
+                className="w-full bg-black/60 border border-white/10 focus:border-white text-white px-4 py-3 rounded-2xl text-xs outline-none transition-all cursor-pointer appearance-none [&>option]:bg-zinc-900"
+              >
+                {INQUIRY_CATEGORIES.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
               Subject
@@ -383,7 +473,7 @@ export default function LetsTalk({ isOpen, onClose }: { isOpen: boolean; onClose
 
           <div className="pt-2">
             <Button type="submit" variant="primary" icon={Send} className="w-full justify-center">
-              SEND EMAIL
+              SEND VIA WHATSAPP
             </Button>
           </div>
         </form>
