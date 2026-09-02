@@ -10,6 +10,7 @@ import {
   deleteProject,
   reorderProjects,
 } from '@/lib/api';
+import { PROJECT_DESC_MAX_WORDS, clampWords, countWords } from '@/lib/text';
 import type { Project } from '@/lib/types';
 
 interface AdminProjectsProps {
@@ -335,16 +336,30 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
-                Description
+              <label className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
+                <span>Description</span>
+                <span
+                  className={`text-[10px] font-mono tracking-wider normal-case ${
+                    countWords(projectForm.description) >= PROJECT_DESC_MAX_WORDS
+                      ? 'text-amber-300'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  {countWords(projectForm.description)}/{PROJECT_DESC_MAX_WORDS} kata
+                </span>
               </label>
               <textarea
-                rows={3}
+                rows={5}
                 required
                 value={projectForm.description}
-                onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
+                onChange={(e) =>
+                  setProjectForm({
+                    ...projectForm,
+                    description: clampWords(e.target.value, PROJECT_DESC_MAX_WORDS),
+                  })
+                }
                 className="w-full bg-black/80 border border-white/15 focus:border-white text-white px-4 py-3 rounded-xl outline-none text-sm"
-                placeholder="Deskripsi mengenai fitur dan teknologi..."
+                placeholder={`Deskripsi mengenai fitur dan teknologi (maksimal ${PROJECT_DESC_MAX_WORDS} kata)...`}
               />
             </div>
 

@@ -37,7 +37,7 @@ export default function Preloader({ onComplete, apiPromises = [] }: PreloaderPro
         } else if (currentProgress < 50) {
           setStatusText('LOADING UI IMAGES & GRAPHICS...');
         } else if (currentProgress < 75) {
-          setStatusText('LOADING AUDIO & SPIDERMAN MEDIA...');
+          setStatusText('LOADING AUDIO & MEDIA...');
         } else if (currentProgress < 100) {
           setStatusText('SYNCHRONIZING INTERFACE & FONTS...');
         } else {

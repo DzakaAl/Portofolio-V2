@@ -1,12 +1,13 @@
 'use client';
 import React, { useState } from 'react';
-import { User, FolderGit2, Layers, ExternalLink, LogOut, Menu, X } from 'lucide-react';
+import { User, FolderGit2, Layers, Languages, ExternalLink, LogOut, Menu, X } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   projectsCount: number;
   techStacksCount: number;
+  pendingTranslationsCount: number;
   onBackHome: () => void;
   onLogout: () => void;
 }
@@ -16,6 +17,7 @@ export default function Sidebar({
   setActiveTab,
   projectsCount,
   techStacksCount,
+  pendingTranslationsCount,
   onBackHome,
   onLogout,
 }: SidebarProps) {
@@ -112,6 +114,30 @@ export default function Sidebar({
               </div>
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${activeTab === 'techstack' ? 'bg-black text-white' : 'bg-white/10 text-slate-300'}`}>
                 {techStacksCount}
+              </span>
+            </button>
+
+            <button
+              onClick={() => handleTabClick('translations')}
+              className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                activeTab === 'translations'
+                  ? 'bg-white text-black shadow-lg shadow-white/10 scale-[1.02]'
+                  : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Languages className="w-4 h-4" /> Translations
+              </div>
+              <span
+                className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                  activeTab === 'translations'
+                    ? 'bg-black text-white'
+                    : pendingTranslationsCount > 0
+                      ? 'bg-amber-500/20 text-amber-300'
+                      : 'bg-white/10 text-slate-300'
+                }`}
+              >
+                {pendingTranslationsCount}
               </span>
             </button>
           </div>

@@ -3,12 +3,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import Hero from './partials/Hero';
-import About from './partials/About';
-import ProjectShowcase from './partials/Featured';
-import HowIWork from './partials/HowIWork';
-import LetsTalkModal from './partials/LetsTalk';
-import AudioPlayer from './partials/AudioPlayer';
+import Hero from './components/Hero';
+import About from './components/About';
+import ProjectShowcase from './components/Featured';
+import HowIWork from './components/HowIWork';
 import Preloader from '../preloader';
 import { getFeaturedProjects, getAbout, getTechStacks, getMessages } from '@/lib/api';
 
@@ -22,17 +20,14 @@ if (typeof window !== 'undefined') {
 
 export default function HomePage() {
   const router = useRouter();
-  const [isContactOpen, setIsContactOpen] = useState(false);
 
   // Preloader & audio state (dipindah dari App.jsx lama, aman untuk prerender)
   const [isLoading, setIsLoading] = useState(true);
-  const [startAudio, setStartAudio] = useState(false);
 
   useEffect(() => {
     const hasPreloaded = sessionStorage.getItem('has_preloaded');
     if (hasPreloaded) {
       setIsLoading(false);
-      setStartAudio(true);
     }
 
     // Scroll ke hash target jika datang dari halaman lain
@@ -84,11 +79,19 @@ export default function HomePage() {
   const handlePreloaderComplete = () => {
     sessionStorage.setItem('has_preloaded', 'true');
     setIsLoading(false);
-    setStartAudio(true);
+    // Auto-play musik dipicu hanya di awal (setelah preloader selesai;
+    // AudioPlayer global di layout mendengarkan event ini..
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('start-portfolio-audio'));
+    }
   };
 
-  const navigateToLab = () => {
-    router.push('/lab');
+  const navigateToProject = () => {
+    router.push('/project');
+  };
+
+  const navigateToContact = () => {
+    router.push('/contact');
   };
 
   return (
@@ -102,26 +105,19 @@ export default function HomePage() {
       )}
 
 
-      <AudioPlayer autoPlayTrigger={startAudio} />
-
-      <Navbar onOpenContact={() => setIsContactOpen(true)} />
+      <Navbar />
 
       <main>
-        <Hero isLoading={isLoading} onOpenContact={() => setIsContactOpen(true)} />
+        <Hero isLoading={isLoading} onOpenContact={navigateToContact} />
         <About />
         <ProjectShowcase
-          onNavigateToProjects={navigateToLab}
-          onOpenContact={() => setIsContactOpen(true)}
+          onNavigateToProjects={navigateToProject}
+          onOpenContact={navigateToContact}
         />
-        <HowIWork onOpenContact={() => setIsContactOpen(true)} />
+        <HowIWork onOpenContact={navigateToContact} />
       </main>
 
-      <Footer onOpenContact={() => setIsContactOpen(true)} />
-
-      <LetsTalkModal
-        isOpen={isContactOpen}
-        onClose={() => setIsContactOpen(false)}
-      />
+      <Footer onOpenContact={navigateToContact} />
     </div>
   );
 }

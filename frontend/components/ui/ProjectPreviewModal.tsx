@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Modal from './Modal';
 import { X } from 'lucide-react';
 import type { Project } from '@/lib/types';
+import { useLanguage } from '@/lib/i18n';
 
 interface ProjectPreviewModalProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ export default function ProjectPreviewModal({
   onClose,
   project,
 }: ProjectPreviewModalProps) {
+  const { tl } = useLanguage();
   const [device, setDevice] = useState<DeviceMode>('desktop');
 
   // Panel shape follows the viewer's device
@@ -78,7 +80,7 @@ export default function ProjectPreviewModal({
           <span className="h-3.5 w-px bg-white/15 shrink-0" />
 
           <h3 className="flex-1 min-w-0 truncate text-sm font-bold uppercase tracking-wide text-white font-tech">
-            {project.title}
+            {tl(project.title)}
           </h3>
 
           <button

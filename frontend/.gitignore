@@ -1,34 +1,15 @@
-# ===== Next.js Frontend =====
-
-# dependencies
 /node_modules
 /.pnp
 .pnp.*
 
-# next.js
 /.next/
 /out/
 
-# production
 /build
 
-# misc
-.DS_Store
-*.pem
-*.tsbuildinfo
-
-# debug logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env: rahasia diabaikan, env berisi NEXT_PUBLIC_* (URL publik) ikut di-commit
 .env
 .env.local
 .env.*.local
-!.env.development
-!.env.production
+.env.development
+.env.production
 
-# deploy platforms
-.vercel

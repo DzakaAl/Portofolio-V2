@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -30,7 +31,15 @@ class ProjectController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => [
+                'required',
+                'string',
+                function (string $attribute, mixed $value, Closure $fail) {
+                    if ($this->countWords((string) $value) > 70) {
+                        $fail('Deskripsi project maksimal 70 kata.');
+                    }
+                },
+            ],
             'tags' => 'nullable',
             'image' => 'nullable|string',
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:5120',
@@ -79,7 +88,16 @@ class ProjectController extends Controller
 
         $request->validate([
             'title' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|required|string',
+            'description' => [
+                'sometimes',
+                'required',
+                'string',
+                function (string $attribute, mixed $value, Closure $fail) {
+                    if ($this->countWords((string) $value) > 70) {
+                        $fail('Deskripsi project maksimal 70 kata.');
+                    }
+                },
+            ],
             'tags' => 'nullable',
             'image' => 'nullable|string',
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:5120',
@@ -150,5 +168,16 @@ class ProjectController extends Controller
             'status' => 'success',
             'message' => 'Project deleted successfully'
         ]);
+    }
+
+    /**
+     * Count words in a text (whitespace separated) — consistent with the
+     * frontend word limiter in frontend/lib/text.ts.
+     */
+    private function countWords(string $text): int
+    {
+        $words = preg_split('/\s+/u', trim($text), -1, PREG_SPLIT_NO_EMPTY);
+
+        return is_array($words) ? count($words) : 0;
     }
 }

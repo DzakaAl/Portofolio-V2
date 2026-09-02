@@ -29,7 +29,6 @@ export interface ChatMessage {
 }
 
 export interface AboutData {
-  title?: string;
   description: string;
   image_url?: string | null;
 }
@@ -46,4 +45,12 @@ export interface ApiResponse<T> {
   status: ApiStatus;
   message?: string;
   data: T;
+}
+
+export interface Translation {
+  id: number;
+  source_text: string;
+  source_hash: string;
+  translated_text: string | null;
+  locale: string;
 }
