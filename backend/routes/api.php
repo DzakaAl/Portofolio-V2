@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\TechStackController;
+use App\Http\Controllers\Api\TranslationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,7 @@ Route::get('/tech-stacks', [TechStackController::class, 'index']);
 Route::get('/projects', [ProjectController::class, 'index']);
 Route::get('/messages', [MessageController::class, 'index']);
 Route::post('/messages', [MessageController::class, 'store']);
+Route::get('/translations', [TranslationController::class, 'index']);
 
 // Protected Admin Endpoints
 Route::middleware('auth:sanctum')->group(function () {
@@ -32,4 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/projects', [ProjectController::class, 'store']);
     Route::put('/projects/{id}', [ProjectController::class, 'update']);
     Route::delete('/projects/{id}', [ProjectController::class, 'destroy']);
+
+    Route::get('/translations/sources', [TranslationController::class, 'syncSources']);
+    Route::post('/translations', [TranslationController::class, 'store']);
+    Route::put('/translations/{id}', [TranslationController::class, 'update']);
+    Route::delete('/translations/{id}', [TranslationController::class, 'destroy']);
 });

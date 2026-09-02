@@ -2,13 +2,14 @@
 import React from 'react';
 import { ArrowUp, Mail, Globe, Sparkles, Send } from 'lucide-react';
 import Button from '../ui/Button';
+import { useLanguage } from '@/lib/i18n';
 
 interface FooterProps {
   onOpenContact?: () => void;
 }
 
 interface NavLink {
-  label: string;
+  labelKey: string;
   href: string;
 }
 
@@ -19,14 +20,16 @@ interface SocialLink {
 }
 
 export default function Footer({ onOpenContact }: FooterProps) {
+  const { t } = useLanguage();
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navLinks: NavLink[] = [
-    { label: 'ABOUT ME', href: '#about' },
-    { label: 'FEATURED WORK', href: '#work' },
-    { label: 'HOW I WORK', href: '#process' },
+    { labelKey: 'nav.about', href: '#about' },
+    { labelKey: 'nav.work', href: '#work' },
+    { labelKey: 'nav.process', href: '#process' },
   ];
 
   const socialLinks: SocialLink[] = [
@@ -69,11 +72,11 @@ export default function Footer({ onOpenContact }: FooterProps) {
 
           <div className="space-y-3">
             <h3 className="font-tech font-bold text-3xl sm:text-4xl lg:text-5xl text-white tracking-tight leading-none uppercase">
-              HAVE AN IDEA IN MIND?
+              {t('footer.ideaTitle')}
             </h3>
             
             <p className="font-mono text-xs sm:text-sm text-slate-400 max-w-lg mx-auto leading-relaxed pt-1">
-              Available for freelance projects, full-time contracts, and innovative technical collaborations.
+              {t('footer.ideaSubtitle')}
             </p>
           </div>
 
@@ -85,7 +88,7 @@ export default function Footer({ onOpenContact }: FooterProps) {
               icon={Send}
               iconPosition="right"
             >
-              GET IN TOUCH
+              {t('footer.getInTouch')}
             </Button>
           </div>
         </div>
@@ -97,18 +100,18 @@ export default function Footer({ onOpenContact }: FooterProps) {
           <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3 order-1 md:order-1">
             {navLinks.map((link) => (
               <a
-                key={link.label}
+                key={link.href}
                 href={link.href}
                 className="hover:text-white transition-colors duration-200"
               >
-                {link.label}
+                {t(link.labelKey)}
               </a>
             ))}
             <button
               onClick={onOpenContact}
               className="hover:text-white transition-colors duration-200 cursor-pointer"
             >
-              CONTACT
+              {t('footer.contact')}
             </button>
           </div>
 
@@ -141,14 +144,14 @@ export default function Footer({ onOpenContact }: FooterProps) {
               iconPosition="right"
               className="hover:text-white"
             >
-              BACK TO TOP
+              {t('footer.backToTop')}
             </Button>
           </div>
         </div>
 
         {/* Bottom Copyright */}
         <div className="text-center text-[11px] sm:text-xs font-mono text-slate-600 pt-2 border-t border-white/5">
-          Â© 2026 DZAKAAL STUDIO. ALL RIGHTS RESERVED.
+          {t('footer.copyright')}
         </div>
 
       </div>

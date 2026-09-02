@@ -12,6 +12,7 @@ import type {
   ChatMessage,
   Project,
   TechStack,
+  Translation,
 } from './types';
 
 const API_BASE: string =
@@ -264,5 +265,66 @@ export async function loginAdmin(email: string, password: string): Promise<Login
 export async function logoutAdmin(): Promise<ApiResponse<null>> {
   return fetchJson('/logout', {
     method: 'POST',
+  });
+}
+
+/**
+ * Verify the stored admin token against the API (/user).
+ * Returns the authenticated user, or null when the token is
+ * missing/invalid/expired — used to protect the /admin page.
+ */
+export async function getAdminUser(): Promise<AdminUser | null> {
+  try {
+    // AuthController@user responds with { status, user: {...} }
+    const json = await fetchJson<ApiResponse<AdminUser> & { user?: AdminUser }>('/user');
+    return json.user ?? json.data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// ----------------- TRANSLATIONS API (DB dictionary EN -> ID) -----------------
+
+/** Public dictionary map: { "English source": "Indonesian translation" } */
+export async function getTranslations(): Promise<Record<string, string>> {
+  return dedupe('translations', async () => {
+    try {
+      const json = await fetchJson<ApiResponse<Record<string, string>>>('/translations');
+      return json.data || {};
+    } catch (err) {
+      console.warn('Failed to fetch translations from API:', err);
+      return {};
+    }
+  });
+}
+
+/** Admin: collect every content text (Abouts & Projects) into the translations table. */
+export async function syncTranslationSources(): Promise<ApiResponse<Translation[]>> {
+  return fetchJson('/translations/sources');
+}
+
+export async function createTranslation(data: {
+  source_text: string;
+  translated_text: string | null;
+}): Promise<ApiResponse<Translation>> {
+  return fetchJson('/translations', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateTranslation(
+  id: number,
+  translated_text: string | null
+): Promise<ApiResponse<Translation>> {
+  return fetchJson(`/translations/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ translated_text }),
+  });
+}
+
+export async function deleteTranslation(id: number): Promise<ApiResponse<null>> {
+  return fetchJson(`/translations/${id}`, {
+    method: 'DELETE',
   });
 }

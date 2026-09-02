@@ -1,8 +1,9 @@
 'use client';
 import React, { useState, useEffect, useRef, useId } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Menu, X, ArrowUpRight } from 'lucide-react';
-import Button from '../ui/Button';
+import { Menu, X } from 'lucide-react';
+import LanguageToggle from '../ui/LanguageToggle';
+import { useLanguage } from '@/lib/i18n';
 
 interface GlassSurfaceProps {
   children?: React.ReactNode;
@@ -25,10 +26,6 @@ interface GlassSurfaceProps {
   mixBlendMode?: string;
   className?: string;
   style?: React.CSSProperties;
-}
-
-interface NavbarProps {
-  onOpenContact: () => void;
 }
 
 const useDarkMode = () => {
@@ -268,20 +265,25 @@ function GlassSurface({
   );
 }
 
-const navLinks: Array<{ href: string; label: string }> = [
-  { href: '#about', label: 'ABOUT ME' },
-  { href: '#work', label: 'FEATURED WORK' },
-  { href: '#process', label: 'HOW I WORK' },
+const navLinks: Array<{ href: string; labelKey: string }> = [
+  { href: '#about', labelKey: 'nav.about' },
+  { href: '#work', labelKey: 'nav.work' },
+  { href: '#process', labelKey: 'nav.process' },
+  { href: '/contact', labelKey: 'nav.contact' },
 ];
 
-export default function Navbar({ onOpenContact }: NavbarProps) {
+export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isHome = pathname === '/';
+  const isContactPage = pathname === '/contact';
+  // Link aktif: section di home, atau halaman /contact
+  const currentActive = isContactPage ? '/contact' : activeSection;
 
   // Navigasi ke home dari halaman lain; bawa target hash via sessionStorage
   const goHome = (targetHash?: string) => {
@@ -309,6 +311,7 @@ export default function Navbar({ onOpenContact }: NavbarProps) {
 
   useEffect(() => {
     const sections = navLinks
+      .filter(({ href }) => href.startsWith('#'))
       .map(({ href }) => document.querySelector(href))
       .filter((el): el is Element => el !== null);
 
@@ -339,6 +342,11 @@ export default function Navbar({ onOpenContact }: NavbarProps) {
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetHash: string) => {
     e.preventDefault();
     setMobileMenuOpen(false);
+    // Link rute halaman (mis. /contact)
+    if (targetHash.startsWith('/')) {
+      router.push(targetHash);
+      return;
+    }
     if (!isHome) {
       goHome(targetHash);
     } else {
@@ -366,51 +374,44 @@ export default function Navbar({ onOpenContact }: NavbarProps) {
           <a
             href="/"
             onClick={handleBrandClick}
-            className="flex items-center gap-2.5 group py-1"
+            className="flex items-center gap-2.5 group py-1 shrink-0"
           >
-            <span className="font-lovelight text-sky-400 text-3xl sm:text-4xl font-semibold leading-none group-hover:text-sky-300 transition-colors drop-shadow-[0_2px_8px_rgba(56,189,248,0.3)]">
+            <span className="font-lovelight text-sky-400 text-3xl sm:text-4xl font-semibold leading-none whitespace-nowrap group-hover:text-sky-300 transition-colors drop-shadow-[0_2px_8px_rgba(56,189,248,0.3)]">
               DzakaAl
             </span>
           </a>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-tech font-bold tracking-wider">
+          <nav className="hidden md:flex items-center gap-4 lg:gap-8 text-xs lg:text-sm font-tech font-bold tracking-wider shrink-0">
             {navLinks.map((link) => {
-              const isActive = activeSection === link.href;
+              const isActive = currentActive === link.href;
               return (
                 <a
                   key={link.href}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
                   aria-current={isActive ? 'true' : undefined}
-                  className={`transition-all duration-300 text-sm drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] ${
+                  className={`whitespace-nowrap transition-all duration-300 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] ${
                     isActive
                       ? 'text-white font-extrabold drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] scale-105'
                       : 'text-slate-200 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]'
                   }`}
                 >
-                  {link.label}
+                  {t(link.labelKey)}
                 </a>
               );
             })}
           </nav>
 
-          {/* CTA Action Button */}
-          <div className="hidden md:flex items-center gap-4">
-            <Button
-              onClick={onOpenContact}
-              variant="secondary"
-              icon={ArrowUpRight}
-              size="sm"
-            >
-              LET'S TALK
-            </Button>
+          {/* Language Switcher — desktop only (mobile: full toggle di dropdown menu) */}
+          <div className="hidden md:flex items-center shrink-0">
+            <LanguageToggle />
           </div>
 
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-white hover:text-slate-200 focus:outline-none drop-shadow cursor-pointer"
+            className="md:hidden p-2 text-white hover:text-slate-200 focus:outline-none drop-shadow cursor-pointer shrink-0"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -420,7 +421,7 @@ export default function Navbar({ onOpenContact }: NavbarProps) {
         {mobileMenuOpen && (
           <div className="md:hidden mt-3 glass-panel-strong rounded-2xl p-6 flex flex-col gap-4 animate-in fade-in slide-in-from-top-4">
             {navLinks.map((link) => {
-              const isActive = activeSection === link.href;
+              const isActive = currentActive === link.href;
               return (
                 <a
                   key={link.href}
@@ -434,21 +435,15 @@ export default function Navbar({ onOpenContact }: NavbarProps) {
                     isActive ? 'text-white' : 'text-slate-200 hover:text-white'
                   }`}
                 >
-                  {link.label}
+                  {t(link.labelKey)}
                 </a>
               );
             })}
-            <Button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenContact();
-              }}
-              variant="primary"
-              icon={ArrowUpRight}
-              className="w-full mt-2"
-            >
-              LET'S TALK
-            </Button>
+
+            {/* Language Switcher — dipisah di bagian bawah sendiri, full width */}
+            <div className="border-t border-white/10 pt-4 mt-1">
+              <LanguageToggle variant="full" />
+            </div>
           </div>
         )}
       </div>

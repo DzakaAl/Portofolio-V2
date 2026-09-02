@@ -1,12 +1,13 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { ExternalLink } from 'lucide-react';
-import DriftWall from '@/components/ui/DriftWall';
+import DriftWall from '@/components/project/DriftWall';
 import Navbar from '@/components/layout/Navbar';
-import LetsTalkModal from '../home/partials/LetsTalk';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import ProjectPreviewModal from '@/components/ui/ProjectPreviewModal';
+import { useLanguage } from '@/lib/i18n';
 import { getProjects } from '@/lib/api';
 import type { Project } from '@/lib/types';
 
@@ -32,10 +33,11 @@ function useWallConfig() {
 }
 
 export default function LabPage() {
+  const router = useRouter();
+  const { t, tl } = useLanguage();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [previewProject, setPreviewProject] = useState<Project | null>(null);
-  const [isContactOpen, setIsContactOpen] = useState(false);
   const { columns, tileWidth, tileHeight } = useWallConfig();
 
   useEffect(() => {
@@ -50,9 +52,9 @@ export default function LabPage() {
   }, []);
 
   return (
-    <div className="relative min-h-dvh h-screen w-screen bg-[#060010] text-white overflow-hidden select-none">
+    <div className="relative min-h-dvh h-screen w-screen text-white overflow-hidden select-none">
       {/* Header Navbar */}
-      <Navbar onOpenContact={() => setIsContactOpen(true)} />
+      <Navbar />
 
       {/* Pure Full-Screen DriftWall */}
       <div className="absolute inset-0 z-0">
@@ -105,12 +107,12 @@ export default function LabPage() {
             <div className="p-6 sm:p-8 space-y-5">
               <div className="space-y-2">
                 <h3 className="text-2xl sm:text-3xl font-black font-tech text-white tracking-tight leading-tight">
-                  {selectedProject.title}
+                  {tl(selectedProject.title)}
                 </h3>
               </div>
 
               <p className="text-white/60 text-sm sm:text-base leading-relaxed font-light">
-                {selectedProject.description}
+                {tl(selectedProject.description)}
               </p>
 
               <div className="flex flex-wrap gap-2">
@@ -126,7 +128,7 @@ export default function LabPage() {
 
               <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-4 flex-wrap">
                 <span className="text-[10px] font-mono tracking-widest text-white/40 uppercase">
-                  Project · The Lab
+                  {t('project.labLabel')}
                 </span>
                 {(selectedProject.show_preview ?? true) && (
                   <Button
@@ -139,7 +141,7 @@ export default function LabPage() {
                     size="md"
                     icon={ExternalLink}
                   >
-                    Preview
+                    {t('project.preview')}
                   </Button>
                 )}
               </div>
@@ -152,12 +154,7 @@ export default function LabPage() {
         isOpen={Boolean(previewProject)}
         onClose={() => setPreviewProject(null)}
         project={previewProject}
-        onOpenContact={() => setIsContactOpen(true)}
-      />
-
-      <LetsTalkModal
-        isOpen={isContactOpen}
-        onClose={() => setIsContactOpen(false)}
+        onOpenContact={() => router.push('/contact')}
       />
     </div>
   );

@@ -5,6 +5,7 @@ import type { LucideIcon } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Card from '@/components/ui/Card';
+import { useLanguage } from '@/lib/i18n';
 
 interface WorkPhase {
   icon: LucideIcon;
@@ -18,6 +19,7 @@ interface HowIWorkProps {
 }
 
 export default function HowIWork(_: HowIWorkProps = {}) {
+  const { t } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<Array<HTMLDivElement | null>>([]);
@@ -25,27 +27,27 @@ export default function HowIWork(_: HowIWorkProps = {}) {
   const phases: WorkPhase[] = [
     {
       icon: Search,
-      title: "DISCOVER & STRATEGY",
-      subtitle: "Requirement Mapping",
-      description: "Defining scope, goals, and constraints upfront so the project starts with a clear direction and measurable outcomes.",
+      title: t('work.p1.title'),
+      subtitle: t('work.p1.subtitle'),
+      description: t('work.p1.desc'),
     },
     {
       icon: PenTool,
-      title: "DESIGN & PROTOTYPE",
-      subtitle: "UI/UX & Interactive Mockups",
-      description: "Translating requirements into wireframes, a cohesive design system, and a clickable prototype before writing code.",
+      title: t('work.p2.title'),
+      subtitle: t('work.p2.subtitle'),
+      description: t('work.p2.desc'),
     },
     {
       icon: Code2,
-      title: "BUILD & INTEGRATE",
-      subtitle: "Engineering & Integration",
-      description: "Shipping in iterative sprints with code reviews, API integrations, and custom features refined at every step.",
+      title: t('work.p3.title'),
+      subtitle: t('work.p3.subtitle'),
+      description: t('work.p3.desc'),
     },
     {
       icon: Rocket,
-      title: "LAUNCH & GROW",
-      subtitle: "Deployment & Support",
-      description: "Final QA, performance tuning, and a smooth handoff â€” then monitoring and iterating after launch.",
+      title: t('work.p4.title'),
+      subtitle: t('work.p4.subtitle'),
+      description: t('work.p4.desc'),
     }
   ];
 
@@ -105,7 +107,7 @@ export default function HowIWork(_: HowIWorkProps = {}) {
       {/* Header */}
       <div ref={headerRef} className="mb-16">
         <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-tech text-white tracking-tight leading-none mb-4">
-          HOW I WORK
+          {t('work.title')}
         </h2>
       </div>
 
@@ -138,7 +140,7 @@ export default function HowIWork(_: HowIWorkProps = {}) {
                   <Card variant="glass" hoverEffect={false}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-3">
                       <span className="font-mono text-xs text-white/40 font-bold tracking-widest uppercase">
-                        PHASE 0{idx + 1}
+                        {t('work.phase')} 0{idx + 1}
                       </span>
                       <span className="text-xs font-mono text-sky-400/90 tracking-wider truncate">
                         {phase.subtitle}

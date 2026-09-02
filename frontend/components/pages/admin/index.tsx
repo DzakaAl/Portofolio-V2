@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
-import About from './partials/About';
-import Projects from './partials/Projects';
-import TechStack from './partials/TechStack';
-import { logoutAdmin } from '@/lib/api';
+import About from './components/About';
+import Projects from './components/Projects';
+import TechStack from './components/TechStack';
+import Translations from './components/Translations';
+import { logoutAdmin, getAdminUser } from '@/lib/api';
 
-type AdminTab = 'about' | 'projects' | 'techstack';
+type AdminTab = 'about' | 'projects' | 'techstack' | 'translations';
 
 interface StatusMessage {
   type: '' | 'success' | 'error';
@@ -24,14 +25,31 @@ export default function AdminPage() {
   const [message, setMessage] = useState<StatusMessage>({ type: '', text: '' });
   const [projectsCount, setProjectsCount] = useState(0);
   const [techStacksCount, setTechStacksCount] = useState(0);
+  const [pendingTranslationsCount, setPendingTranslationsCount] = useState(0);
 
-  // Auth guard (client-side, sama seperti perilaku lama)
+  // Auth guard: token must exist AND be valid (verified against the API).
+  // Tanpa verifikasi ini, siapa pun bisa menempelkan token sembarang di
+  // localStorage untuk membuka halaman admin.
   useEffect(() => {
-    if (!localStorage.getItem('admin_token')) {
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
       router.replace('/login');
       return;
     }
-    setIsAuthed(true);
+    let mounted = true;
+    getAdminUser().then((user) => {
+      if (!mounted) return;
+      if (!user) {
+        localStorage.removeItem('admin_token');
+        localStorage.removeItem('admin_user');
+        router.replace('/login');
+        return;
+      }
+      setIsAuthed(true);
+    });
+    return () => {
+      mounted = false;
+    };
   }, [router]);
 
   const handleShowMessage: ShowMessageFn = (type, text) => {
@@ -70,6 +88,7 @@ export default function AdminPage() {
         setActiveTab={(tab: string) => setActiveTab(tab as AdminTab)}
         projectsCount={projectsCount}
         techStacksCount={techStacksCount}
+        pendingTranslationsCount={pendingTranslationsCount}
         onBackHome={handleBackHome}
         onLogout={handleLogout}
       />
@@ -113,6 +132,14 @@ export default function AdminPage() {
           <TechStack
             onShowMessage={handleShowMessage}
             onTechStacksCountChange={setTechStacksCount}
+          />
+        )}
+
+        {/* SECTION 4: TRANSLATIONS (EN -> ID dictionary for DB content) */}
+        {activeTab === 'translations' && (
+          <Translations
+            onShowMessage={handleShowMessage}
+            onPendingCountChange={setPendingTranslationsCount}
           />
         )}
       </main>

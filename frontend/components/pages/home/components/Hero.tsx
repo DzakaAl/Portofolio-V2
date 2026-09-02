@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import LiveWallpaper from '@/components/ui/LiveWallpaper';
 import CloudVideoHover from '@/components/ui/CloudVideoHover';
 import Button from '@/components/ui/Button';
+import { useLanguage } from '@/lib/i18n';
 import { gsap } from 'gsap';
 
 interface HeroProps {
@@ -11,6 +12,7 @@ interface HeroProps {
 }
 
 export default function Hero({ onOpenContact, isLoading }: HeroProps) {
+  const { t } = useLanguage();
   const heroRef = useRef<HTMLElement>(null);
   const line1Ref = useRef<HTMLDivElement>(null);
   const line2Ref = useRef<HTMLDivElement>(null);
@@ -19,8 +21,8 @@ export default function Hero({ onOpenContact, isLoading }: HeroProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  const text1 = "TURNING IDEAS";
-  const text2 = "INTO CODE";
+  const text1 = t('hero.line1');
+  const text2 = t('hero.line2');
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -116,7 +118,7 @@ export default function Hero({ onOpenContact, isLoading }: HeroProps) {
       <div ref={socialRef} className="absolute bottom-12 left-6 sm:left-10 z-30 flex items-center gap-3 pointer-events-auto">
         <Button
           onClick={onOpenContact}
-          title="Send Email"
+          title={t('hero.sendEmail')}
           variant="icon"
           size="icon"
         >
@@ -154,7 +156,7 @@ export default function Hero({ onOpenContact, isLoading }: HeroProps) {
           download="DzakaAl_CV.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          title="Download CV"
+          title={t('hero.downloadCV')}
           variant="icon"
           size="icon"
         >

@@ -1,12 +1,14 @@
 'use client';
 import React, { useRef, useEffect, useState } from 'react';
-import LogoLoop from '@/components/ui/LogoLoop';
+import LogoLoop from '@/components/home/LogoLoop';
 import { gsap } from 'gsap';
+import { useLanguage } from '@/lib/i18n';
 const portraitImg = '/assets/portrait.webp';
 import { getAbout, getTechStacks } from '@/lib/api';
 import type { AboutData, TechStack } from '@/lib/types';
 
 export default function About() {
+  const { t, tl } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
@@ -14,7 +16,6 @@ export default function About() {
   const logoLoopRef = useRef<HTMLDivElement>(null);
 
   const [aboutData, setAboutData] = useState<AboutData>({
-    title: 'ABOUT ME',
     description: '',
     image_url: null,
   });
@@ -118,12 +119,12 @@ export default function About() {
       <div className="w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-center z-10 my-auto py-8">
         <div className="lg:col-span-7 space-y-6">
           <h2 ref={titleRef} className="text-4xl sm:text-5xl lg:text-6xl font-bold font-tech text-white tracking-tight mb-6 uppercase">
-            ABOUT ME
+            {t('about.title')}
           </h2>
 
           <div ref={textRef} className="text-slate-300 text-base sm:text-lg lg:text-xl leading-relaxed text-left font-normal">
             {aboutData.description ? (
-              <p className="whitespace-pre-line">{aboutData.description}</p>
+              <p className="whitespace-pre-line">{tl(aboutData.description)}</p>
             ) : (
               <div className="space-y-3" aria-hidden="true">
                 <div className="h-4 w-full rounded bg-white/[0.06] animate-pulse" />
