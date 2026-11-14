@@ -1,12 +1,33 @@
-# ===== Monorepo Root =====
-# Rule spesifik ada di backend/.gitignore (Laravel) dan frontend/.gitignore (Next.js)
-
 # OS junk
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Editor (global)
+# Editor
 .vscode/
 .idea/
 *.swp
+
+# Dependencies / build
+/node_modules
+/.pnp
+.pnp.*
+/.next/
+/out/
+/build
+*.tsbuildinfo
+next-env.d.ts
+*.log
+
+# Env
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# User uploads (live on the server, not in git)
+/public/storage/
+
+# DB dump (admin hash + visitor emails) — never commit
+/prisma/seed-data.sql

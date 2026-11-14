@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" font-family="Georgia, 'Times New Roman', serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d1420"/><stop offset="1" stop-color="#070a10"/>
+    </linearGradient>
+    <linearGradient id="seal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#49cbff"/><stop offset="1" stop-color="#7a5bff"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="560" fill="url(#bg)"/>
+  <rect x="24" y="24" width="752" height="512" fill="none" stroke="#49cbff" stroke-opacity="0.35" stroke-width="2"/>
+  <rect x="34" y="34" width="732" height="492" fill="none" stroke="#ffffff" stroke-opacity="0.12"/>
+  <text x="400" y="104" text-anchor="middle" fill="#49cbff" font-family="monospace" font-size="17" letter-spacing="7">FULL-STACK</text>
+  <text x="400" y="150" text-anchor="middle" fill="#8c92a1" font-size="20" letter-spacing="2">This certifies that</text>
+  <text x="400" y="212" text-anchor="middle" fill="#ffffff" font-size="46" font-style="italic">M. Dzaka Al Fikri</text>
+  <line x1="250" y1="236" x2="550" y2="236" stroke="#49cbff" stroke-opacity="0.4"/>
+  <text x="400" y="286" text-anchor="middle" fill="#8c92a1" font-size="18">has successfully completed</text>
+  <text x="400" y="344" text-anchor="middle" fill="#eef1f6" font-size="34" font-weight="bold">Full-Stack Web Development</text>
+  <text x="400" y="392" text-anchor="middle" fill="#8c92a1" font-family="monospace" font-size="16" letter-spacing="3">Dicoding Indonesia</text>
+  <g transform="translate(400,462)">
+    <circle r="40" fill="url(#seal)"/>
+    <circle r="40" fill="none" stroke="#ffffff" stroke-opacity="0.3"/>
+    <text y="8" text-anchor="middle" fill="#04121c" font-family="Georgia" font-weight="bold" font-size="26">FS</text>
+  </g>
+  <text x="130" y="470" fill="#565c69" font-family="monospace" font-size="13">ISSUED</text>
+  <line x1="120" y1="484" x2="250" y2="484" stroke="#ffffff" stroke-opacity="0.2"/>
+  <text x="670" y="470" text-anchor="end" fill="#565c69" font-family="monospace" font-size="13">SIGNATURE</text>
+  <line x1="550" y1="484" x2="680" y2="484" stroke="#ffffff" stroke-opacity="0.2"/>
+</svg>

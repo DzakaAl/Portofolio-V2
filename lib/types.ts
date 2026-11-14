@@ -1,0 +1,75 @@
+export interface Project {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  tags: string[];
+  image: string;
+  link?: string | null;
+  featured: boolean;
+  show_preview?: boolean;
+  order?: number;
+}
+
+export interface TechStack {
+  id: number;
+  title: string;
+  alt: string;
+  src: string;
+  order?: number;
+}
+
+export interface ChatMessage {
+  id: number;
+  user: string;
+  email: string;
+  avatar?: string | null;
+  text: string;
+  time: string;
+}
+
+export interface AboutData {
+  description: string;
+  image_url?: string | null;
+}
+
+export interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export type ApiStatus = 'success' | 'error';
+
+export interface ApiResponse<T> {
+  status: ApiStatus;
+  message?: string;
+  data: T;
+}
+
+export interface Translation {
+  id: number;
+  source_text: string;
+  source_hash: string;
+  translated_text: string | null;
+  locale: string;
+}
+
+export interface Experience {
+  id: number;
+  period: string;
+  role: string;
+  org: string;
+  description: string;
+  order?: number;
+}
+
+export interface Certificate {
+  id: number;
+  title: string;
+  issuer: string;
+  year: string;
+  image: string;
+  link?: string | null;
+  order?: number;
+}

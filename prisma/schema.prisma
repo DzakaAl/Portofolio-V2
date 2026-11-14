@@ -1,0 +1,142 @@
+// Prisma schema for Portfolio V2 (full Next.js backend).
+// Mirrors the original Laravel/MariaDB schema so migrated data drops in 1:1.
+// Ids are Int (serialize cleanly to JSON `number`, matching lib/types.ts).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int       @id @default(autoincrement())
+  name            String
+  email           String    @unique
+  emailVerifiedAt DateTime? @map("email_verified_at")
+  password        String
+  rememberToken   String?   @map("remember_token") @db.VarChar(100)
+  createdAt       DateTime? @map("created_at")
+  updatedAt       DateTime? @map("updated_at")
+
+  tokens AccessToken[]
+
+  @@map("users")
+}
+
+// Simplified replacement for Laravel Sanctum personal_access_tokens.
+// `token` stores the sha256 hex of the plaintext bearer token.
+model AccessToken {
+  id         Int       @id @default(autoincrement())
+  userId     Int       @map("user_id")
+  name       String    @default("admin-token")
+  token      String    @unique @db.VarChar(64)
+  lastUsedAt DateTime? @map("last_used_at")
+  createdAt  DateTime? @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("access_tokens")
+}
+
+model About {
+  id          Int       @id @default(autoincrement())
+  description String    @db.Text
+  imageUrl    String?   @map("image_url")
+  createdAt   DateTime? @map("created_at")
+  updatedAt   DateTime? @map("updated_at")
+
+  @@map("abouts")
+}
+
+model TechStack {
+  id        Int       @id @default(autoincrement())
+  title     String
+  alt       String
+  src       String
+  order     Int       @default(0)
+  createdAt DateTime? @map("created_at")
+  updatedAt DateTime? @map("updated_at")
+
+  @@map("tech_stacks")
+}
+
+model Project {
+  id          Int       @id @default(autoincrement())
+  slug        String    @unique
+  title       String
+  description String    @db.Text
+  tags        Json
+  image       String
+  link        String?
+  featured    Boolean   @default(false)
+  showPreview Boolean   @default(true) @map("show_preview")
+  order       Int       @default(0)
+  createdAt   DateTime? @map("created_at")
+  updatedAt   DateTime? @map("updated_at")
+
+  @@map("projects")
+}
+
+model Message {
+  id        Int       @id @default(autoincrement())
+  user      String
+  email     String
+  avatar    String?
+  text      String    @db.Text
+  time      String
+  createdAt DateTime? @map("created_at")
+  updatedAt DateTime? @map("updated_at")
+
+  @@map("messages")
+}
+
+model Translation {
+  id             Int       @id @default(autoincrement())
+  sourceText     String    @map("source_text") @db.Text
+  sourceHash     String    @unique @map("source_hash") @db.Char(32)
+  translatedText String?   @map("translated_text") @db.Text
+  locale         String    @default("id") @db.VarChar(5)
+  createdAt      DateTime? @map("created_at")
+  updatedAt      DateTime? @map("updated_at")
+
+  @@map("translations")
+}
+
+model Experience {
+  id          Int       @id @default(autoincrement())
+  period      String
+  role        String
+  org         String
+  description String    @db.Text
+  order       Int       @default(0)
+  createdAt   DateTime? @map("created_at")
+  updatedAt   DateTime? @map("updated_at")
+
+  @@map("experiences")
+}
+
+model Certificate {
+  id        Int       @id @default(autoincrement())
+  title     String
+  issuer    String
+  year      String
+  image     String
+  link      String?
+  order     Int       @default(0)
+  createdAt DateTime? @map("created_at")
+  updatedAt DateTime? @map("updated_at")
+
+  @@map("certificates")
+}
+
+// Single-row CV document edited in admin (CV generator). `data` = CvData (lib/cv.ts).
+model Cv {
+  id        Int       @id @default(autoincrement())
+  data      Json
+  updatedAt DateTime? @map("updated_at")
+
+  @@map("cvs")
+}
