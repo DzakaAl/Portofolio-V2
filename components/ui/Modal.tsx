@@ -73,7 +73,7 @@ export default function Modal({
         ref={modalRef}
         tabIndex={-1}
         data-lenis-prevent
-        className={`relative z-10 w-full ${maxWidth} glass-panel-strong !bg-[rgba(10,10,10,0.38)] rounded-3xl overflow-hidden border border-white/20 p-6 sm:p-8 shadow-[0_40px_120px_rgba(0,0,0,0.95)] max-h-[90vh] overflow-y-auto outline-none animate-in fade-in zoom-in-95 duration-300 ${className}`}
+        className={`relative z-10 w-full ${maxWidth} glass-panel-strong !bg-black/55 rounded-3xl overflow-hidden border border-white/20 p-6 sm:p-8 shadow-[0_40px_120px_rgba(0,0,0,0.95)] max-h-[90vh] overflow-y-auto outline-none animate-in fade-in zoom-in-95 duration-300 ${className}`}
       >
         {/* Ambient Top Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
