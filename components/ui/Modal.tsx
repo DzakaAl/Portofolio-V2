@@ -56,14 +56,15 @@ export default function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-xl animate-in fade-in duration-300"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300"
       role="dialog"
       aria-modal="true"
       data-lenis-prevent
     >
-      {/* Backdrop overlay click */}
+      {/* Light scrim + click-to-close. Sibling of the panel (not its parent) so the panel's own
+          backdrop-filter still blurs the live page behind it instead of an already-blurred layer. */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 bg-black/20"
         onClick={onClose}
       />
 
@@ -72,7 +73,7 @@ export default function Modal({
         ref={modalRef}
         tabIndex={-1}
         data-lenis-prevent
-        className={`relative z-10 w-full ${maxWidth} glass-panel-strong rounded-3xl overflow-hidden border border-white/20 p-6 sm:p-8 shadow-[0_40px_120px_rgba(0,0,0,0.95)] max-h-[90vh] overflow-y-auto outline-none animate-in fade-in zoom-in-95 duration-300 ${className}`}
+        className={`relative z-10 w-full ${maxWidth} glass-panel-strong !bg-[rgba(10,10,10,0.38)] rounded-3xl overflow-hidden border border-white/20 p-6 sm:p-8 shadow-[0_40px_120px_rgba(0,0,0,0.95)] max-h-[90vh] overflow-y-auto outline-none animate-in fade-in zoom-in-95 duration-300 ${className}`}
       >
         {/* Ambient Top Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
