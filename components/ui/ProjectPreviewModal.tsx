@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Modal from './Modal';
 import { X } from 'lucide-react';
 import type { Project } from '@/lib/types';
@@ -14,7 +14,11 @@ interface ProjectPreviewModalProps {
 
 type DeviceMode = 'desktop' | 'mobile';
 
-const PREVIEW_ZOOM = 0.75; // < 1 = zoom out (iframe renders larger, then scales down to fit the panel)
+// Browser-style 75% zoom: the site is laid out at the width of a real screen / 0.75
+// (desktop) or a real phone / 0.75 (mobile), then scaled down to fit the panel — so it
+// looks like the real site viewed in a browser at 75%, not squeezed into the small panel.
+const PREVIEW_ZOOM = 0.75;
+const MOBILE_VIEWPORT = 390;
 
 export default function ProjectPreviewModal({
   isOpen,
@@ -23,6 +27,29 @@ export default function ProjectPreviewModal({
 }: ProjectPreviewModalProps) {
   const { tl } = useLanguage();
   const [device, setDevice] = useState<DeviceMode>('desktop');
+  const frameRef = useRef<HTMLDivElement>(null);
+  const [view, setView] = useState({ scale: PREVIEW_ZOOM, w: 0, h: 0 });
+
+  // Fit: virtual viewport (real-screen width / zoom) scaled to the panel's actual size
+  useEffect(() => {
+    const el = frameRef.current;
+    if (!isOpen || !el) return;
+    const measure = () => {
+      const pw = el.clientWidth;
+      const ph = el.clientHeight;
+      if (!pw || !ph) return;
+      const virtualW =
+        device === 'mobile'
+          ? MOBILE_VIEWPORT / PREVIEW_ZOOM
+          : Math.max(window.innerWidth, 1280) / PREVIEW_ZOOM;
+      const scale = pw / virtualW;
+      setView({ scale, w: virtualW, h: ph / scale });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [isOpen, device, project]);
 
   // Panel shape follows the viewer's device
   useEffect(() => {
@@ -104,7 +131,7 @@ export default function ProjectPreviewModal({
               boxShadow: '0 24px 80px rgba(0,0,0,0.75)',
             }}
           >
-            <div className="relative h-full w-full overflow-hidden rounded-[15px] bg-[#050508]">
+            <div ref={frameRef} className="relative h-full w-full overflow-hidden rounded-[15px] bg-[#050508]">
               {/* Live site — native scrolling, real layout; sandbox blocks navigation/popups/form submits */}
               <iframe
                 src={project.link || undefined}
@@ -112,9 +139,9 @@ export default function ProjectPreviewModal({
                 sandbox="allow-scripts allow-same-origin"
                 className="absolute left-0 top-0 border-0"
                 style={{
-                  width: `${100 / PREVIEW_ZOOM}%`,
-                  height: `${100 / PREVIEW_ZOOM}%`,
-                  transform: `scale(${PREVIEW_ZOOM})`,
+                  width: view.w || `${100 / PREVIEW_ZOOM}%`,
+                  height: view.h || `${100 / PREVIEW_ZOOM}%`,
+                  transform: `scale(${view.scale})`,
                   transformOrigin: 'top left',
                 }}
               />
