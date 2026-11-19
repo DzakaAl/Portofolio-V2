@@ -122,7 +122,8 @@ export async function saveProjectBuild(
     await writeFile(target, out);
   }
 
-  return `${PUBLIC_PREFIX}${dirName}/${index}`;
+  // ?v= busts any stale browser copy of the entry page after re-uploads
+  return `${PUBLIC_PREFIX}${dirName}/${index}?v=${Date.now().toString(36)}`;
 }
 
 /** Delete a hosted build folder if `link` points to one. Safe to call with any link. */

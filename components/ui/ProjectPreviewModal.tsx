@@ -17,7 +17,7 @@ type DeviceMode = 'desktop' | 'mobile';
 // Browser-style 75% zoom: the site is laid out at the width of a real screen / 0.75
 // (desktop) or a real phone / 0.75 (mobile), then scaled down to fit the panel — so it
 // looks like the real site viewed in a browser at 75%, not squeezed into the small panel.
-const PREVIEW_ZOOM = 0.75;
+const PREVIEW_ZOOM = 0.81; // 75% + 8%
 const MOBILE_VIEWPORT = 390;
 
 export default function ProjectPreviewModal({
