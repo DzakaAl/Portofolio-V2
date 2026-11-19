@@ -37,9 +37,9 @@ async function updateProject(req: NextRequest, idStr: string) {
       return validationError({ description: ['Deskripsi project maksimal 70 kata.'] });
     data.description = description;
   }
-  if (input.buildFile) {
+  if (input.buildFile || input.buildFolder) {
     try {
-      data.link = await saveProjectBuild(input.buildFile, project.slug);
+      data.link = await saveProjectBuild((input.buildFolder ?? input.buildFile)!, project.slug);
     } catch (e) {
       return validationError({ build_file: [(e as Error).message] });
     }

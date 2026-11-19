@@ -59,6 +59,7 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const [buildFile, setBuildFile] = useState<File | null>(null);
+  const [buildFolder, setBuildFolder] = useState<File[] | null>(null);
 
   useEffect(() => {
     fetchProjects();
@@ -106,6 +107,7 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
 
   const handleOpenAddModal = () => {
     setBuildFile(null);
+    setBuildFolder(null);
     setEditingId(null);
     setImageFile(null);
     setImagePreview('');
@@ -123,6 +125,7 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
 
   const handleOpenEditModal = (proj: Project) => {
     setBuildFile(null);
+    setBuildFolder(null);
     setEditingId(proj.id);
     setImageFile(null);
     setImagePreview(proj.image || '');
@@ -160,7 +163,12 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
     formData.append('featured', projectForm.featured ? '1' : '0');
     formData.append('show_preview', projectForm.show_preview ? '1' : '0');
 
-    if (buildFile) formData.append('build_file', buildFile);
+    if (buildFolder) {
+      for (const f of buildFolder) {
+        formData.append('build_files', f, f.name);
+        formData.append('build_paths', f.webkitRelativePath || f.name);
+      }
+    } else if (buildFile) formData.append('build_file', buildFile);
 
     if (imageFile) {
       formData.append('image_file', imageFile);
@@ -390,11 +398,11 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
               </label>
               <input
                 type="text"
-                value={buildFile ? '' : projectForm.link}
-                disabled={!!buildFile}
+                value={buildFile || buildFolder ? '' : projectForm.link}
+                disabled={!!(buildFile || buildFolder)}
                 onChange={(e) => setProjectForm({ ...projectForm, link: e.target.value })}
                 className="w-full bg-black/80 border border-white/15 focus:border-white text-white px-4 py-3 rounded-xl outline-none text-sm disabled:opacity-40"
-                placeholder={buildFile ? 'Akan memakai build yang di-upload' : 'https://example.com'}
+                placeholder={buildFile || buildFolder ? 'Akan memakai build yang di-upload' : 'https://example.com'}
               />
               <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-slate-500">
                 <span className="h-px flex-1 bg-white/10" /> atau upload hasil build <span className="h-px flex-1 bg-white/10" />
@@ -403,16 +411,16 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
                 <FileArchive className="w-7 h-7 shrink-0 text-sky-400 group-hover:scale-110 transition-transform" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-bold text-white">
-                    {buildFile ? buildFile.name : isHostedBuild ? 'Build ter-upload — klik untuk ganti' : 'Pilih file .zip hasil build'}
+                    {buildFolder ? `${buildFolder[0]?.webkitRelativePath.split('/')[0] || 'Folder'} (${buildFolder.length} file)` : buildFile ? buildFile.name : isHostedBuild ? 'Build ter-upload — klik untuk ganti' : 'Pilih file .zip hasil build'}
                   </span>
                   <span className="block text-xs text-slate-400 mt-0.5">
-                    Zip isi folder dist/ / build/ / out/ (harus ada index.html, maks 100MB)
+                    Zip isi folder dist/ / build/ / out/ atau pilih folder-nya (harus ada index.html, maks 100MB)
                   </span>
                 </span>
-                {buildFile && (
+                {(buildFile || buildFolder) && (
                   <button
                     type="button"
-                    onClick={(e) => { e.preventDefault(); setBuildFile(null); }}
+                    onClick={(e) => { e.preventDefault(); setBuildFile(null); setBuildFolder(null); }}
                     className="shrink-0 rounded-full p-1.5 text-slate-400 hover:bg-white/10 hover:text-white cursor-pointer"
                     aria-label="Batalkan file build"
                   >
@@ -422,7 +430,23 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
                 <input
                   type="file"
                   accept=".zip,application/zip"
-                  onChange={(e) => setBuildFile(e.target.files?.[0] ?? null)}
+                  onChange={(e) => { setBuildFolder(null); setBuildFile(e.target.files?.[0] ?? null); }}
+                  className="hidden"
+                />
+              </label>
+              <label className="flex items-center justify-center gap-2 px-4 py-2.5 border border-white/15 hover:border-sky-400/80 rounded-xl bg-black/50 cursor-pointer text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white transition-all">
+                <FileArchive className="w-4 h-4 text-sky-400" />
+                Atau upload folder (dist/ / build/ — beserta gambar &amp; aset)
+                <input
+                  type="file"
+                  // @ts-expect-error non-standard folder picker attribute
+                  webkitdirectory=""
+                  multiple
+                  onChange={(e) => {
+                    const list = Array.from(e.target.files ?? []);
+                    setBuildFile(null);
+                    setBuildFolder(list.length ? list : null);
+                  }}
                   className="hidden"
                 />
               </label>

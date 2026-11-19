@@ -14,54 +14,97 @@ const MAX_BYTES = 100 * 1024 * 1024; // 100 MB zip
 const PUBLIC_PREFIX = '/storage/builds/';
 const ROOT = path.join(process.cwd(), 'public', 'storage', 'builds');
 
-/** Make absolute asset paths ("/assets/x.js") relative so the build works from a sub-folder. */
-function relativizeHtml(html: string): string {
-  return html.replace(/(\s(?:src|href)=["'])\/(?!\/)/gi, '$1./');
+const TEXT_EXT = /\.(html?|css|js|mjs|json|svg|webmanifest)$/i;
+const MAX_TEXT_REWRITE = 5 * 1024 * 1024;
+
+/** A file of an uploaded build folder, with its path relative to the picked folder. */
+export type BuildEntry = { path: string; file: File };
+
+/**
+ * Builds are served from /storage/builds/<dir>/ instead of the domain root, so
+ * root-absolute references ("/assets/x.js", url(/img/a.png), "/logo.svg" inside
+ * JS) would 404. Rewrite every quoted/url()/attr reference that points at a file
+ * that actually exists in the build to its real served location.
+ */
+function rewriteAbsoluteRefs(text: string, known: Set<string>, servedBase: string): string {
+  return text.replace(/(["'`(=])\/(?!\/)([^"'`)\s<>?#]+)/g, (m, lead: string, rel: string) => {
+    let decoded = rel;
+    try { decoded = decodeURIComponent(rel); } catch { /* keep raw */ }
+    return known.has(decoded) ? `${lead}${servedBase}${rel}` : m;
+  });
 }
 
-export async function saveProjectBuild(file: File, slugHint: string): Promise<string> {
-  if (!file.name.toLowerCase().endsWith('.zip')) {
-    throw new Error('File build harus berupa .zip (isi folder dist/build/out).');
+function cleanPath(name: string): string | null {
+  const clean = path.posix.normalize(name.replace(/\\/g, '/'));
+  if (clean.startsWith('..') || clean.startsWith('/') || clean.includes('/../')) {
+    throw new Error(`Path tidak valid: ${name}`);
   }
-  if (file.size > MAX_BYTES) throw new Error('Ukuran file build maksimal 100MB.');
+  if (clean.startsWith('__MACOSX/') || clean.endsWith('.DS_Store')) return null;
+  return clean;
+}
 
-  let entries: Record<string, Uint8Array>;
-  try {
-    entries = unzipSync(new Uint8Array(await file.arrayBuffer()));
-  } catch {
-    throw new Error('File zip rusak atau tidak bisa dibaca.');
-  }
-
-  // Sanitize paths (no zip-slip) and drop OS junk.
+export async function saveProjectBuild(
+  source: File | BuildEntry[],
+  slugHint: string,
+): Promise<string> {
   const files: Array<[string, Uint8Array]> = [];
-  for (const [name, data] of Object.entries(entries)) {
-    if (name.endsWith('/')) continue;
-    const clean = path.posix.normalize(name.replace(/\\/g, '/'));
-    if (clean.startsWith('..') || clean.startsWith('/') || clean.includes('/../')) {
-      throw new Error(`Path tidak valid di dalam zip: ${name}`);
+
+  if (Array.isArray(source)) {
+    // Folder upload (webkitdirectory): drop the picked folder's own name from the paths.
+    let total = 0;
+    for (const { path: rawPath, file } of source) {
+      total += file.size;
+      if (total > MAX_BYTES) throw new Error('Ukuran folder build maksimal 100MB.');
+      const parts = rawPath.replace(/\\/g, '/').split('/');
+      const clean = cleanPath(parts.length > 1 ? parts.slice(1).join('/') : rawPath);
+      if (clean) files.push([clean, new Uint8Array(await file.arrayBuffer())]);
     }
-    if (clean.startsWith('__MACOSX/') || clean.endsWith('.DS_Store')) continue;
-    files.push([clean, data]);
+    if (!files.length) throw new Error('Folder build kosong.');
+  } else {
+    if (!source.name.toLowerCase().endsWith('.zip')) {
+      throw new Error('File build harus berupa .zip atau folder (isi folder dist/build/out).');
+    }
+    if (source.size > MAX_BYTES) throw new Error('Ukuran file build maksimal 100MB.');
+    let entries: Record<string, Uint8Array>;
+    try {
+      entries = unzipSync(new Uint8Array(await source.arrayBuffer()));
+    } catch {
+      throw new Error('File zip rusak atau tidak bisa dibaca.');
+    }
+    for (const [name, data] of Object.entries(entries)) {
+      if (name.endsWith('/')) continue;
+      const clean = cleanPath(name);
+      if (clean) files.push([clean, data]);
+    }
   }
 
-  // Entry point = the shallowest index.html (handles zips that wrap a dist/ folder).
+  // Entry point = the shallowest index.html (handles builds that wrap a dist/ folder).
   const index = files
     .map(([n]) => n)
     .filter((n) => n === 'index.html' || n.endsWith('/index.html'))
     .sort((a, b) => a.split('/').length - b.split('/').length)[0];
-  if (!index) throw new Error('index.html tidak ditemukan di dalam zip.');
+  if (!index) throw new Error('index.html tidak ditemukan di dalam build.');
 
   const base = slugHint.toLowerCase().replace(/[^a-z0-9-]+/g, '-').slice(0, 40) || 'project';
   const dirName = `${base}-${randomBytes(4).toString('hex')}`;
   const dir = path.join(ROOT, dirName);
   const indexDir = path.posix.dirname(index);
+  const prefix = indexDir === '.' ? '' : `${indexDir}/`;
+
+  // Files addressable from the site root, relative to the entry's folder.
+  const known = new Set<string>();
+  for (const [name] of files) if (name.startsWith(prefix)) known.add(name.slice(prefix.length));
+  const servedBase = `${PUBLIC_PREFIX}${dirName}/${prefix}`;
 
   for (const [name, data] of files) {
     const target = path.join(dir, name);
     if (!target.startsWith(dir + path.sep)) continue;
     await mkdir(path.dirname(target), { recursive: true });
-    const isHtml = name.endsWith('.html') && path.posix.dirname(name) === indexDir;
-    await writeFile(target, isHtml ? relativizeHtml(Buffer.from(data).toString('utf8')) : data);
+    const rewrite = TEXT_EXT.test(name) && data.byteLength <= MAX_TEXT_REWRITE;
+    await writeFile(
+      target,
+      rewrite ? rewriteAbsoluteRefs(Buffer.from(data).toString('utf8'), known, servedBase) : data,
+    );
   }
 
   return `${PUBLIC_PREFIX}${dirName}/${index}`;

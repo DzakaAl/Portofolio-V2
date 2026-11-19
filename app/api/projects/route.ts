@@ -50,9 +50,9 @@ export async function POST(req: NextRequest) {
   }
 
   let link = typeof input.raw.link === 'string' && input.raw.link.trim() ? input.raw.link : null;
-  if (input.buildFile) {
+  if (input.buildFile || input.buildFolder) {
     try {
-      link = await saveProjectBuild(input.buildFile, title);
+      link = await saveProjectBuild((input.buildFolder ?? input.buildFile)!, title);
     } catch (e) {
       return validationError({ build_file: [(e as Error).message] });
     }

@@ -14,7 +14,7 @@ interface ProjectPreviewModalProps {
 
 type DeviceMode = 'desktop' | 'mobile';
 
-const PREVIEW_ZOOM = 0.8; // < 1 = zoom out (iframe renders larger, then scales down to fit the panel)
+const PREVIEW_ZOOM = 0.75; // < 1 = zoom out (iframe renders larger, then scales down to fit the panel)
 
 export default function ProjectPreviewModal({
   isOpen,
