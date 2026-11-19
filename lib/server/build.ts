@@ -34,6 +34,19 @@ function rewriteAbsoluteRefs(text: string, known: Set<string>, servedBase: strin
   });
 }
 
+/**
+ * History-mode SPAs (Vue/React Router) read location.pathname to pick a route, but
+ * inside a sub-folder that path matches nothing → blank page showing only the layout
+ * (e.g. the footer). Pin relative URLs with <base> and present the app a root path.
+ */
+function injectSpaShim(html: string, servedBase: string): string {
+  const shim =
+    `<base href="${servedBase}"><script>try{history.replaceState(null,'','/')}catch(e){}</script>`;
+  return /<head[^>]*>/i.test(html)
+    ? html.replace(/<head[^>]*>/i, (m) => m + shim)
+    : shim + html;
+}
+
 function cleanPath(name: string): string | null {
   const clean = path.posix.normalize(name.replace(/\\/g, '/'));
   if (clean.startsWith('..') || clean.startsWith('/') || clean.includes('/../')) {
@@ -101,10 +114,12 @@ export async function saveProjectBuild(
     if (!target.startsWith(dir + path.sep)) continue;
     await mkdir(path.dirname(target), { recursive: true });
     const rewrite = TEXT_EXT.test(name) && data.byteLength <= MAX_TEXT_REWRITE;
-    await writeFile(
-      target,
-      rewrite ? rewriteAbsoluteRefs(Buffer.from(data).toString('utf8'), known, servedBase) : data,
-    );
+    let out: Uint8Array | string = data;
+    if (rewrite) {
+      out = rewriteAbsoluteRefs(Buffer.from(data).toString('utf8'), known, servedBase);
+      if (name === index) out = injectSpaShim(out, servedBase);
+    }
+    await writeFile(target, out);
   }
 
   return `${PUBLIC_PREFIX}${dirName}/${index}`;
