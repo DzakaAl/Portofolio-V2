@@ -27,11 +27,19 @@ export type BuildEntry = { path: string; file: File };
  * that actually exists in the build to its real served location.
  */
 function rewriteAbsoluteRefs(text: string, known: Set<string>, servedBase: string): string {
-  return text.replace(/(["'`(=])\/(?!\/)([^"'`)\s<>?#]+)/g, (m, lead: string, rel: string) => {
+  // Top-level folders of the build (e.g. "_next", "assets"): runtime-built URLs such as
+  // webpack's public path ("/_next/") are never a complete file name, so match the folder.
+  const dirs = [...new Set([...known].filter((k) => k.includes('/')).map((k) => k.split('/')[0]))];
+  const dirRe = dirs.length
+    ? new RegExp(`(["'\`(=])/(${dirs.map((d) => d.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})/`, 'g')
+    : null;
+  let out = text.replace(/(["'`(=])\/(?!\/)([^"'`)\s<>?#]+)/g, (m, lead: string, rel: string) => {
     let decoded = rel;
     try { decoded = decodeURIComponent(rel); } catch { /* keep raw */ }
     return known.has(decoded) ? `${lead}${servedBase}${rel}` : m;
   });
+  if (dirRe) out = out.replace(dirRe, (_m, lead: string, dir: string) => `${lead}${servedBase}${dir}/`);
+  return out;
 }
 
 /**

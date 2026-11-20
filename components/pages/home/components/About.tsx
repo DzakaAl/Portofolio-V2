@@ -113,9 +113,8 @@ export default function About() {
     <section
       ref={sectionRef}
       id="about"
-      className="relative min-h-screen flex flex-col justify-between py-20 px-5 sm:px-10 lg:px-14 max-w-[1600px] mx-auto overflow-hidden select-none"
+      className="relative isolate bg-black min-h-screen flex flex-col justify-between py-20 px-5 sm:px-10 lg:px-14 max-w-[1600px] mx-auto overflow-hidden select-none"
     >
-      <div className="absolute top-1/2 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-center z-10 my-auto py-8">
         <div className="lg:col-span-7">

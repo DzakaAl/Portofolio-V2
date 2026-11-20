@@ -14,10 +14,10 @@ interface ProjectPreviewModalProps {
 
 type DeviceMode = 'desktop' | 'mobile';
 
-// Browser-style 75% zoom: the site is laid out at the width of a real screen / 0.75
-// (desktop) or a real phone / 0.75 (mobile), then scaled down to fit the panel — so it
+// No zoom: the site is laid out at the width of a real screen / 0.9
+// (desktop) or a real phone / 0.9 (mobile), then scaled down to fit the panel — so it
 // looks like the real site viewed in a browser at 75%, not squeezed into the small panel.
-const PREVIEW_ZOOM = 0.81; // 75% + 8%
+const PREVIEW_ZOOM = 1; // 100%: no zoom
 const MOBILE_VIEWPORT = 390;
 
 export default function ProjectPreviewModal({
@@ -132,19 +132,24 @@ export default function ProjectPreviewModal({
             }}
           >
             <div ref={frameRef} className="relative h-full w-full overflow-hidden rounded-[15px] bg-[#050508]">
-              {/* Live site — native scrolling, real layout; sandbox blocks navigation/popups/form submits */}
-              <iframe
-                src={project.link || undefined}
-                title={project.title}
-                sandbox="allow-scripts allow-same-origin"
-                className="absolute left-0 top-0 border-0"
-                style={{
-                  width: view.w || `${100 / PREVIEW_ZOOM}%`,
-                  height: view.h || `${100 / PREVIEW_ZOOM}%`,
-                  transform: `scale(${view.scale})`,
-                  transformOrigin: 'top left',
-                }}
-              />
+              {project.link ? (
+                /* Live site — native scrolling, real layout; sandbox blocks navigation/popups/form submits */
+                <iframe
+                  src={project.link}
+                  title={project.title}
+                  sandbox="allow-scripts allow-same-origin"
+                  className="absolute left-0 top-0 border-0"
+                  style={{
+                    width: view.w || `${100 / PREVIEW_ZOOM}%`,
+                    height: view.h || `${100 / PREVIEW_ZOOM}%`,
+                    transform: `scale(${view.scale})`,
+                    transformOrigin: 'top left',
+                  }}
+                />
+              ) : (
+                /* No embeddable live site (offline / blocks framing) — show the project mock-up */
+                <img src={project.image} alt={project.title} className="absolute inset-0 h-full w-full object-contain bg-[#f1f1f1]" />
+              )}
 
               {/* One-time sheen sweep */}
               <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[15px]" aria-hidden="true">

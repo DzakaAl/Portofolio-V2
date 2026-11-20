@@ -92,7 +92,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-slate-100 selection:bg-white selection:text-black">
+    <div className="relative isolate min-h-screen bg-black text-slate-100 selection:bg-white selection:text-black">
 
       {isLoading && (
         <Preloader

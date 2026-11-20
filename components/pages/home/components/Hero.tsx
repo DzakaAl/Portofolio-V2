@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { HeroDecor } from '@/components/ui/Decor';
 import { getFeaturedProjects } from '@/lib/api';
 import { useLanguage } from '@/lib/i18n';
 import type { Project } from '@/lib/types';
@@ -76,18 +77,7 @@ export default function Hero({ onOpenContact }: HeroProps) {
       id="hero"
       className="relative flex min-h-[94vh] w-full flex-col overflow-hidden px-5 pb-12 pt-28 sm:px-10 lg:px-14 max-w-[1600px] mx-auto select-none"
     >
-      {/* faint oversized wordmark */}
-      <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden">
-        <span
-          className="whitespace-nowrap font-display text-[27vw] font-bold leading-none text-transparent"
-          style={{ WebkitTextStroke: '1px rgba(255,255,255,0.035)' }}
-        >
-          DZAKA
-        </span>
-      </div>
-
-      {/* glow */}
-      <div className="pointer-events-none absolute left-1/2 top-[-4%] h-[560px] w-[1200px] -translate-x-1/2 rounded-full bg-sky-500/10 blur-[150px]" />
+      <HeroDecor />
 
       {/* stacked project cards (bigger + more breathing room) */}
       <div

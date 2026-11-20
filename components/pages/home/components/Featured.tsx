@@ -1,4 +1,5 @@
 'use client';
+import { SectionDecor } from '@/components/ui/Decor';
 import SectionHeading from '@/components/ui/SectionHeading';
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
@@ -50,8 +51,6 @@ export default function ProjectShowcase({ onNavigateToProjects, onOpenContact }:
         gsap.timeline({ scrollTrigger: { trigger: el, start: 'center 35%', end: 'bottom top', scrub: 1 } })
           .to(media, { y: -120, rotate: dir * 4, scale: 0.9, opacity: 0.3, ease: 'none' }, 0)
           .to(el.querySelector('.fw-text'), { y: -80, opacity: 0, ease: 'none' }, 0);
-        // ghost number parallax
-        gsap.fromTo(el.querySelector('.fw-ghost'), { yPercent: -10, x: dir * 120, opacity: 0 }, { yPercent: -90, x: 0, opacity: 1, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
       });
       gsap.fromTo('.fw-more', { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.fw-more', start: 'top 90%' } });
       gsap.fromTo('.fw-head > p, .fw-head > h2', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1, stagger: 0.12, ease: 'expo.out', scrollTrigger: { trigger: '.fw-head', start: 'top 80%' } });
@@ -72,18 +71,7 @@ export default function ProjectShowcase({ onNavigateToProjects, onOpenContact }:
             key={project.id}
             className={`fw-panel ${even ? 'fw-even' : ''} relative isolate flex min-h-screen items-center overflow-hidden`}
           >
-            {/* ghost index */}
-            <span
-              className="fw-ghost pointer-events-none absolute -z-10 select-none font-tech font-bold leading-none text-transparent"
-              style={{
-                WebkitTextStroke: '1px rgba(255,255,255,0.04)',
-                fontSize: 'clamp(160px,34vw,520px)',
-                [even ? 'right' : 'left']: '-2%',
-                top: '50%',
-              } as React.CSSProperties}
-            >
-              {String(i + 1).padStart(2, '0')}
-            </span>
+            <SectionDecor side={even ? 'left' : 'right'} hairline={false} />
 
             <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 items-center gap-10 px-5 py-28 sm:px-10 lg:grid-cols-2 lg:gap-20 lg:px-14">
               <div className={`fw-media overflow-hidden rounded-2xl ${even ? 'lg:order-2' : ''}`}>

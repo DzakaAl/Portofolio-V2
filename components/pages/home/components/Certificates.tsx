@@ -1,4 +1,5 @@
 'use client';
+import { SectionDecor } from '@/components/ui/Decor';
 import SectionHeading from '@/components/ui/SectionHeading';
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
@@ -37,10 +38,7 @@ export default function Certificates() {
 
   return (
     <section ref={sectionRef} id="certificates" className="relative isolate mx-auto flex min-h-screen max-w-[1600px] flex-col justify-center overflow-hidden px-5 py-28 sm:px-10 lg:px-14">
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 h-[560px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky-500/[0.05] blur-[170px]" />
-        <span className="absolute right-2 top-6 font-tech text-[17vw] font-bold leading-none text-transparent opacity-60" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.03)' }}>04</span>
-      </div>
+      <SectionDecor side="left" />
       <SectionHeading className="cert-head relative mb-16" title={t('certificates.title')} />
 
       <div className="cert-grid grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">

@@ -1,4 +1,5 @@
 'use client';
+import { FooterDecor } from '@/components/ui/Decor';
 import React, { useEffect, useRef } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { gsap } from 'gsap';
@@ -38,8 +39,7 @@ export default function Footer({ onOpenContact }: FooterProps) {
 
   return (
     <footer ref={ref} className="relative overflow-hidden border-t border-white/10 bg-black">
-      {/* glow */}
-      <div className="pointer-events-none absolute left-1/2 top-0 h-[340px] w-[900px] -translate-x-1/2 rounded-full bg-sky-500/10 blur-[150px]" />
+      <FooterDecor />
 
       <div className="relative z-10 mx-auto max-w-[1600px] px-5 sm:px-10 lg:px-14">
         {/* Bottom bar */}

@@ -1,4 +1,5 @@
 'use client';
+import { SectionDecor } from '@/components/ui/Decor';
 import SectionHeading from '@/components/ui/SectionHeading';
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
@@ -50,10 +51,7 @@ export default function Experience() {
 
   return (
     <section ref={sectionRef} id="experience" className="relative isolate mx-auto flex min-h-screen max-w-[1600px] flex-col justify-center overflow-hidden px-5 py-28 sm:px-10 lg:px-14">
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute right-0 top-1/3 h-[560px] w-[760px] translate-x-1/3 rounded-full bg-indigo-500/[0.05] blur-[170px]" />
-        <span className="absolute left-2 top-6 font-tech text-[17vw] font-bold leading-none text-transparent opacity-60" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.03)' }}>03</span>
-      </div>
+      <SectionDecor side="right" />
       <SectionHeading className="xp-head relative mb-16" title={t('experience.title')} />
 
       <div className="xp-list relative mx-auto max-w-[1100px]">
