@@ -3,6 +3,7 @@ import { mkdir, writeFile, rm, readFile, cp, symlink, access, copyFile, unlink }
 import net from 'net';
 import path from 'path';
 import { promisify } from 'util';
+import { buildInPlace, hasNextDep } from '@/lib/server/source-build';
 
 /**
  * Hosted *server* builds (Laravel + React/Inertia, full-stack Next.js).
@@ -53,6 +54,9 @@ export function detectServerApp(files: Files): { kind: AppKind; root: string } |
   if (laravel !== null && names.has(`${laravel}public/index.php`)) return { kind: 'laravel', root: laravel };
   const next = rootOf(files, '.next/BUILD_ID') ?? rootOf(files, '.next/standalone/server.js');
   if (next !== null) return { kind: 'next', root: next };
+  // Next.js source (not built yet): package.json depending on next
+  const pkg = rootOf(files, 'package.json');
+  if (pkg !== null && hasNextDep(files, pkg)) return { kind: 'next', root: pkg };
   return null;
 }
 
@@ -62,6 +66,14 @@ function nextBasePath(files: Files, root: string): string {
   if (!f) return '';
   try {
     return String(JSON.parse(Buffer.from(f[1]).toString('utf8')).basePath || '');
+  } catch {
+    return '';
+  }
+}
+
+async function diskBasePath(dir: string): Promise<string> {
+  try {
+    return String(JSON.parse(await readFile(path.join(dir, '.next', 'routes-manifest.json'), 'utf8')).basePath || '');
   } catch {
     return '';
   }
@@ -97,9 +109,16 @@ export async function installServerApp(files: Files, name: string): Promise<stri
     await writeFile(target, data, { mode: n.endsWith('artisan') ? 0o755 : 0o644 });
   }
 
+  // Source upload → install deps & build on the server (no-op when already built).
+  const prefix = `${RUN_PREFIX}${name}`;
+  await buildInPlace(dir, {
+    skipJsBuildIf: kind === 'laravel' ? 'public/build/manifest.json' : '.next/BUILD_ID',
+    env: { PORTFOLIO_PREFIX: prefix, NEXT_PUBLIC_BASE_PATH: prefix },
+  });
+
   let manifest: Manifest;
   if (kind === 'laravel') manifest = await prepareLaravel(dir, name);
-  else manifest = await prepareNext(dir, name, nextBasePath(files, root));
+  else manifest = await prepareNext(dir, name, await diskBasePath(dir));
 
   await writeFile(path.join(dir, MANIFEST), JSON.stringify(manifest));
   return `${RUN_PREFIX}${name}/`;
@@ -107,7 +126,7 @@ export async function installServerApp(files: Files, name: string): Promise<stri
 
 async function prepareLaravel(dir: string, name: string): Promise<Manifest> {
   if (!(await exists(path.join(dir, 'vendor', 'autoload.php')))) {
-    throw new Error('Folder vendor/ tidak ada. Jalankan "composer install --no-dev" lalu zip ulang beserta vendor/.');
+    throw new Error('vendor/autoload.php tidak ada setelah composer install.');
   }
   // Cached config/routes would pin the build machine's paths & APP_URL.
   for (const f of ['config.php', 'routes-v7.php', 'routes.php', 'packages.php', 'services.php']) {
@@ -174,7 +193,7 @@ async function prepareNext(dir: string, name: string, basePath: string): Promise
   }
   if (await exists(path.join(dir, 'server.js'))) return { kind: 'next', cwd: '.', basePath: hasBase };
   if (!(await exists(path.join(dir, 'node_modules', 'next', 'dist', 'bin', 'next')))) {
-    throw new Error('Build Next.js butuh output: "standalone" (disarankan) atau folder node_modules/ ikut di-zip.');
+    throw new Error('Build Next.js gagal: .next/ atau node_modules/next tidak ditemukan.');
   }
   return { kind: 'next', cwd: '.', basePath: hasBase };
 }

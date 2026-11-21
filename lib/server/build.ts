@@ -2,6 +2,7 @@ import { mkdir, writeFile, rm } from 'fs/promises';
 import path from 'path';
 import { randomBytes } from 'crypto';
 import { unzipSync } from 'fflate';
+import { buildStaticSource, SKIP_DIR } from '@/lib/server/source-build';
 import { detectServerApp, installServerApp, serverAppName, removeServerApp } from '@/lib/server/app-runtime';
 
 /**
@@ -62,6 +63,7 @@ function cleanPath(name: string): string | null {
     throw new Error(`Path tidak valid: ${name}`);
   }
   if (clean.startsWith('__MACOSX/') || clean.endsWith('.DS_Store')) return null;
+  if (SKIP_DIR.test(clean)) return null;
   return clean;
 }
 
@@ -69,7 +71,7 @@ export async function saveProjectBuild(
   source: File | BuildEntry[],
   slugHint: string,
 ): Promise<string> {
-  const files: Array<[string, Uint8Array]> = [];
+  let files: Array<[string, Uint8Array]> = [];
 
   if (Array.isArray(source)) {
     // Folder upload (webkitdirectory): drop the picked folder's own name from the paths.
@@ -104,6 +106,9 @@ export async function saveProjectBuild(
   if (detectServerApp(files)) {
     return installServerApp(files, serverAppName(files, slugHint));
   }
+
+  // Front-end source (package.json + build script) → build on the server first.
+  files = await buildStaticSource(files);
 
   // Entry point = the shallowest index.html (handles builds that wrap a dist/ folder).
   const index = files

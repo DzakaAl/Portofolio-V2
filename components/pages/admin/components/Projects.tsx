@@ -414,7 +414,7 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
                     {buildFolder ? `${buildFolder[0]?.webkitRelativePath.split('/')[0] || 'Folder'} (${buildFolder.length} file)` : buildFile ? buildFile.name : isHostedBuild ? 'Build ter-upload — klik untuk ganti' : 'Pilih file .zip hasil build'}
                   </span>
                   <span className="block text-xs text-slate-400 mt-0.5">
-                    Static (dist/ / build/ / out/), Laravel + React, atau Next.js fullstack — .zip atau folder, maks 300MB
+                    Source atau hasil build: static (Vite/React/Vue), Laravel + React, Next.js — .zip atau folder, maks 300MB
                   </span>
                 </span>
                 {(buildFile || buildFolder) && (
@@ -436,14 +436,17 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
               </label>
               <label className="flex items-center justify-center gap-2 px-4 py-2.5 border border-white/15 hover:border-sky-400/80 rounded-xl bg-black/50 cursor-pointer text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white transition-all">
                 <FileArchive className="w-4 h-4 text-sky-400" />
-                Atau upload folder (dist/ / build/ — beserta gambar &amp; aset)
+                Atau upload folder project (source atau hasil build)
                 <input
                   type="file"
                   // @ts-expect-error non-standard folder picker attribute
                   webkitdirectory=""
                   multiple
                   onChange={(e) => {
-                    const list = Array.from(e.target.files ?? []);
+                    // node_modules / vendor / .git are reinstalled on the server — don't upload them
+                    const list = Array.from(e.target.files ?? []).filter(
+                      (f) => !/(^|\/)(node_modules|vendor|\.git)\//.test(f.webkitRelativePath),
+                    );
                     setBuildFile(null);
                     setBuildFolder(list.length ? list : null);
                   }}
@@ -451,13 +454,10 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
                 />
               </label>
               <p className="text-[11px] leading-relaxed text-slate-500">
-                Static: build dengan base path relatif — Vite: <code className="text-slate-300">base: &apos;./&apos;</code>, CRA: <code className="text-slate-300">&quot;homepage&quot;: &quot;.&quot;</code>.
+                Cukup upload folder project apa adanya. Server otomatis mendeteksi &amp; menjalankan <code className="text-slate-300">composer install</code>, <code className="text-slate-300">npm install</code> dan <code className="text-slate-300">npm run build</code> (pnpm/yarn/bun sesuai lockfile). node_modules/ &amp; vendor/ tidak perlu ikut. Proses build bisa makan beberapa menit.
               </p>
               <p className="text-[11px] leading-relaxed text-slate-500">
-                Laravel + React: zip root project setelah <code className="text-slate-300">npm run build</code> &amp; <code className="text-slate-300">composer install --no-dev</code> (sertakan vendor/ &amp; public/build/, .env opsional — default SQLite).
-              </p>
-              <p className="text-[11px] leading-relaxed text-slate-500">
-                Next.js: set <code className="text-slate-300">output: &apos;standalone&apos;</code> dan <code className="text-slate-300">basePath: &apos;/run/nama-app&apos;</code>, lalu zip root project setelah build (berisi .next/ &amp; public/). App dijalankan di <code className="text-slate-300">/run/nama-app/</code>.
+                Laravel &amp; Next.js dijalankan di <code className="text-slate-300">/run/nama-app/</code> (.env opsional — default SQLite). Next.js: set <code className="text-slate-300">basePath: process.env.PORTFOLIO_PREFIX</code> agar routing rapi.
               </p>
             </div>
 
