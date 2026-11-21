@@ -2,6 +2,7 @@ import { mkdir, writeFile, rm } from 'fs/promises';
 import path from 'path';
 import { randomBytes } from 'crypto';
 import { unzipSync } from 'fflate';
+import { detectServerApp, installServerApp, serverAppName, removeServerApp } from '@/lib/server/app-runtime';
 
 /**
  * Hosted project builds: a .zip of a static build output (Vite `dist/`,
@@ -10,7 +11,7 @@ import { unzipSync } from 'fflate';
  * so the preview modal can iframe it like any live URL.
  */
 
-const MAX_BYTES = 100 * 1024 * 1024; // 100 MB zip
+const MAX_BYTES = 300 * 1024 * 1024; // 300 MB (server builds ship vendor/ or node_modules/)
 const PUBLIC_PREFIX = '/storage/builds/';
 const ROOT = path.join(process.cwd(), 'public', 'storage', 'builds');
 
@@ -75,7 +76,7 @@ export async function saveProjectBuild(
     let total = 0;
     for (const { path: rawPath, file } of source) {
       total += file.size;
-      if (total > MAX_BYTES) throw new Error('Ukuran folder build maksimal 100MB.');
+      if (total > MAX_BYTES) throw new Error('Ukuran folder build maksimal 300MB.');
       const parts = rawPath.replace(/\\/g, '/').split('/');
       const clean = cleanPath(parts.length > 1 ? parts.slice(1).join('/') : rawPath);
       if (clean) files.push([clean, new Uint8Array(await file.arrayBuffer())]);
@@ -83,9 +84,9 @@ export async function saveProjectBuild(
     if (!files.length) throw new Error('Folder build kosong.');
   } else {
     if (!source.name.toLowerCase().endsWith('.zip')) {
-      throw new Error('File build harus berupa .zip atau folder (isi folder dist/build/out).');
+      throw new Error('File build harus berupa .zip atau folder (static, Laravel, atau Next.js).');
     }
-    if (source.size > MAX_BYTES) throw new Error('Ukuran file build maksimal 100MB.');
+    if (source.size > MAX_BYTES) throw new Error('Ukuran file build maksimal 300MB.');
     let entries: Record<string, Uint8Array>;
     try {
       entries = unzipSync(new Uint8Array(await source.arrayBuffer()));
@@ -99,12 +100,17 @@ export async function saveProjectBuild(
     }
   }
 
+  // Laravel (+React/Inertia) or full-stack Next.js → run it as a server app under /run/<name>/
+  if (detectServerApp(files)) {
+    return installServerApp(files, serverAppName(files, slugHint));
+  }
+
   // Entry point = the shallowest index.html (handles builds that wrap a dist/ folder).
   const index = files
     .map(([n]) => n)
     .filter((n) => n === 'index.html' || n.endsWith('/index.html'))
     .sort((a, b) => a.split('/').length - b.split('/').length)[0];
-  if (!index) throw new Error('index.html tidak ditemukan di dalam build.');
+  if (!index) throw new Error('Build tidak dikenali: butuh index.html (static), artisan + public/index.php (Laravel), atau .next/ (Next.js).');
 
   const base = slugHint.toLowerCase().replace(/[^a-z0-9-]+/g, '-').slice(0, 40) || 'project';
   const dirName = `${base}-${randomBytes(4).toString('hex')}`;
@@ -136,6 +142,7 @@ export async function saveProjectBuild(
 
 /** Delete a hosted build folder if `link` points to one. Safe to call with any link. */
 export async function removeProjectBuild(link: string | null | undefined): Promise<void> {
+  await removeServerApp(link);
   if (!link || !link.startsWith(PUBLIC_PREFIX)) return;
   const dirName = link.slice(PUBLIC_PREFIX.length).split('/')[0];
   if (!dirName || dirName.includes('..')) return;

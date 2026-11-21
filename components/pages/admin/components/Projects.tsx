@@ -141,7 +141,7 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
     setIsFormModalOpen(true);
   };
 
-  const isHostedBuild = projectForm.link.startsWith('/storage/builds/');
+  const isHostedBuild = projectForm.link.startsWith('/storage/builds/') || projectForm.link.startsWith('/run/');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -414,7 +414,7 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
                     {buildFolder ? `${buildFolder[0]?.webkitRelativePath.split('/')[0] || 'Folder'} (${buildFolder.length} file)` : buildFile ? buildFile.name : isHostedBuild ? 'Build ter-upload — klik untuk ganti' : 'Pilih file .zip hasil build'}
                   </span>
                   <span className="block text-xs text-slate-400 mt-0.5">
-                    Zip isi folder dist/ / build/ / out/ atau pilih folder-nya (harus ada index.html, maks 100MB)
+                    Static (dist/ / build/ / out/), Laravel + React, atau Next.js fullstack — .zip atau folder, maks 300MB
                   </span>
                 </span>
                 {(buildFile || buildFolder) && (
@@ -451,7 +451,13 @@ export default function Projects({ onShowMessage, onProjectsCountChange }: Admin
                 />
               </label>
               <p className="text-[11px] leading-relaxed text-slate-500">
-                Tip: build dengan base path relatif agar aset terbaca — Vite: <code className="text-slate-300">base: &apos;./&apos;</code>, CRA: <code className="text-slate-300">&quot;homepage&quot;: &quot;.&quot;</code>.
+                Static: build dengan base path relatif — Vite: <code className="text-slate-300">base: &apos;./&apos;</code>, CRA: <code className="text-slate-300">&quot;homepage&quot;: &quot;.&quot;</code>.
+              </p>
+              <p className="text-[11px] leading-relaxed text-slate-500">
+                Laravel + React: zip root project setelah <code className="text-slate-300">npm run build</code> &amp; <code className="text-slate-300">composer install --no-dev</code> (sertakan vendor/ &amp; public/build/, .env opsional — default SQLite).
+              </p>
+              <p className="text-[11px] leading-relaxed text-slate-500">
+                Next.js: set <code className="text-slate-300">output: &apos;standalone&apos;</code> dan <code className="text-slate-300">basePath: &apos;/run/nama-app&apos;</code>, lalu zip root project setelah build (berisi .next/ &amp; public/). App dijalankan di <code className="text-slate-300">/run/nama-app/</code>.
               </p>
             </div>
 
