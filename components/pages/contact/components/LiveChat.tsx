@@ -30,6 +30,8 @@ export default function LiveChat() {
   const [user, setUser] = useState<ChatUser | null>(null);
   const [loadingMsg, setLoadingMsg] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const googleButtonRef = useRef<HTMLDivElement>(null);
+  const [googleUnavailable, setGoogleUnavailable] = useState(false);
 
   // Restore Google chat user session (client-side only)
   useEffect(() => {
@@ -78,38 +80,42 @@ export default function LiveChat() {
     }
   };
 
-  // Google OAuth Official Account Login Handler
-  const handleGoogleLogin = () => {
-    const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-
-    // Jika SDK Google OAuth siap dan Client ID ada di .env
-    if (window.google?.accounts?.id && googleClientId) {
-      window.google.accounts.id.initialize({
-        client_id: googleClientId,
-        callback: (response) => {
-          if (response.credential) {
-            const payload = decodeJwtPayload(response.credential);
-            if (payload && payload.email) {
-              const googleUser: ChatUser = {
-                name: payload.name || payload.email.split('@')[0],
-                email: payload.email,
-                avatar:
-                  payload.picture ||
-                  `https://ui-avatars.com/api/?name=${encodeURIComponent(payload.name || payload.email)}`,
-                id: payload.sub || Date.now().toString(),
-              };
-              setUser(googleUser);
-              localStorage.setItem('google_chat_user', JSON.stringify(googleUser));
-            }
-          }
-        },
-      });
-      window.google.accounts.id.prompt();
-      return;
-    }
-
-    console.warn('Google Sign-In tidak tersedia: NEXT_PUBLIC_GOOGLE_CLIENT_ID belum diisi atau SDK gagal dimuat.');
+  // Simpan user dari ID token Google (dipanggil oleh tombol resmi Google).
+  const handleCredential = (credential?: string) => {
+    if (!credential) return;
+    const payload = decodeJwtPayload(credential);
+    if (!payload?.email) return;
+    const googleUser: ChatUser = {
+      name: payload.name || payload.email.split('@')[0],
+      email: payload.email,
+      avatar: payload.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(payload.name || payload.email)}`,
+      id: payload.sub || Date.now().toString(),
+    };
+    setUser(googleUser);
+    localStorage.setItem('google_chat_user', JSON.stringify(googleUser));
   };
+
+  // Tampilkan tombol resmi "Sign in with Google". Berbeda dengan One Tap (prompt()),
+  // tombol ini selalu membuka popup pilih akun saat diklik dan tidak bisa "dilewati" Google.
+  useEffect(() => {
+    if (user) return;
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) { setGoogleUnavailable(true); return; }
+    let tries = 0;
+    const timer = setInterval(() => {
+      const gid = window.google?.accounts?.id;
+      if (gid && googleButtonRef.current) {
+        clearInterval(timer);
+        gid.initialize({ client_id: clientId, callback: (res) => handleCredential(res.credential) });
+        googleButtonRef.current.innerHTML = '';
+        gid.renderButton(googleButtonRef.current, { theme: 'filled_black', size: 'large', shape: 'pill', text: 'signin_with', locale: 'id' });
+      } else if (++tries > 50) {
+        clearInterval(timer); // SDK Google gagal dimuat (diblokir ekstensi/jaringan)
+        setGoogleUnavailable(true);
+      }
+    }, 200);
+    return () => clearInterval(timer);
+  }, [user]);
 
   const handleGoogleLogout = () => {
     setUser(null);
@@ -231,18 +237,10 @@ export default function LiveChat() {
             {t('liveChat.signInPrompt')}
           </p>
 
-          <button
-            onClick={() => handleGoogleLogin()}
-            className="inline-flex items-center justify-center gap-3 bg-white text-black font-extrabold font-body text-xs px-5 py-2.5 rounded-xl hover:bg-slate-200 active:scale-95 transition-all duration-200 cursor-pointer shadow-[0_4px_20px_rgba(255,255,255,0.15)] group"
-          >
-            <svg className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z" />
-              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.29v3.15C3.26 21.3 7.33 24 12 24z" />
-              <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.29c-.8 1.6-1.29 3.39-1.29 5.42s.49 3.82 1.29 5.42l3.99-3.15z" />
-              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.7 1.29 6.58l3.99 3.15c.95-2.83 3.6-4.98 6.72-4.98z" />
-            </svg>
-            <span>{t('liveChat.signInButton')}</span>
-          </button>
+          <div className="flex justify-center min-h-[44px]" ref={googleButtonRef} />
+          {googleUnavailable && (
+            <p className="text-[11px] font-tech text-white/40">Login Google sedang tidak tersedia. Muat ulang halaman atau nonaktifkan pemblokir iklan.</p>
+          )}
         </div>
       )}
     </section>
