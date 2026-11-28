@@ -41,7 +41,7 @@ export async function saveProjectImage(file: File): Promise<string> {
   return `/storage/projects/${filename}`;
 }
 
-/** Persist an uploaded certificate image, return "/certs/<file>". */
+/** Persist an uploaded certificate image, return "/storage/certs/<file>". */
 export async function saveCertImage(file: File): Promise<string> {
   const ext = (file.name.split('.').pop() || 'png').toLowerCase();
   if (!ALLOWED.has(ext)) {
@@ -50,11 +50,11 @@ export async function saveCertImage(file: File): Promise<string> {
   if (file.size > MAX_BYTES) {
     throw new Error('Ukuran gambar maksimal 5MB.');
   }
-  const dir = path.join(process.cwd(), 'public', 'certs');
+  const dir = path.join(process.cwd(), 'public', 'storage', 'certs');
   await mkdir(dir, { recursive: true });
   const filename = `${randomBytes(20).toString('hex')}.${ext}`;
   await writeFile(path.join(dir, filename), Buffer.from(await file.arrayBuffer()));
-  return `/certs/${filename}`;
+  return `/storage/certs/${filename}`;
 }
 
 /**
